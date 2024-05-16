@@ -4,6 +4,7 @@ from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
 from scipy import integrate
 from pathlib import Path
+import os
 import constantes as c
 
 
@@ -26,16 +27,16 @@ class SeñalReff(Señal):
         self.T = self.periodo()
 
     def periodo(self):
-        self.picos, _ = find_peaks(self.V, distance=0.9 * 1/c.F * 1/np.diff(self.tV)[0])
+        freq = 8000
+        self.picos, _ = find_peaks(self.V, distance=0.9 * 1/freq * 1/np.diff(self.tV)[0])
         return self.tV[self.picos[1]] - self.tV[self.picos[0]]
 
 
 class SeñalZoom(Señal):
-    def __init__(self, file_zoom, file_reff):
+    def __init__(self, file_zoom, T):
         super().__init__(file_zoom)
-        self.SeñalReff = SeñalReff(file_reff)
         self.tf, self.If, self.Vf = self.filtro()
-        self.P_avg, self.I_avg = self.potencia(self.SeñalReff.T)
+        self.P_avg, self.I_avg = self.potencia(T)
 
     def filtro(self):
         dt = 50
@@ -50,6 +51,30 @@ class SeñalZoom(Señal):
         I_avg = np.mean(self.If)
         P_avg = integrate.simpson(self.If * self.Vf, x=self.tf) / T
         return P_avg, I_avg
+
+
+class SeñalProm:
+    def __init__(self, folder):
+        self.señalesReff, self.señalesZoom = self.señales(folder)
+        self.P_avg, self.P_std = self.potencia()
+
+    def señales(self, folder):
+        señalesReff = []
+        señalesZoom = []
+        for file in os.listdir(folder):
+            if file.endswith('.csv') and 'reff' in file:
+                señalReff = SeñalReff(file)
+                señalesReff.append(señalReff)
+        for file in os.listdir(folder):
+            if file.endswith('.csv') and 'zoom' in file:
+                señalZoom = SeñalZoom(file, señalesReff[0].T)
+                señalesZoom.append(señalZoom)
+        return señalesReff, señalesZoom
+    
+    def potencia(self):
+        P_avg = np.mean([señal.P for señal in self.señalesZoom], axis=0)
+        P_std = np.std([señal.P for señal in self.señalesZoom], axis=0)
+        return P_avg, P_std
 
 
 class Test:
