@@ -1,35 +1,46 @@
 import numpy as np
+import pandas as pd
 from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
 from scipy import integrate
+from pathlib import Path
 import constantes as c
 
 
 class Señal:
-    def __init__(self, data):
-        self.tV, self.V, self.tI, self.I = data
+    def __init__(self, file):
+        self.tV, self.V, self.tI, self.I = self.csv(file)
+
+    def csv(self, file):
+        df = pd.read_csv(Path(file).expanduser(), index_col=0)
+        t_volt, volt = [np.asarray(df[f'Tiempo CH{c.CH_VOLT}']), 
+                        np.asarray(df[f'Voltaje CH{c.CH_VOLT}'])]
+        t_istr, istr = [np.asarray(df[f'Tiempo CH{c.CH_ISTR}']), 
+                1/c.R * np.asarray(df[f'Voltaje CH{c.CH_ISTR}'])]
+        return t_volt, volt, t_istr, istr
 
 
 class SeñalReff(Señal):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, file):
+        super().__init__(file)
         self.T = self.periodo()
 
-    def periodo(self, test=False):
-        self.picos, _ = find_peaks(self.V, distance=0.9*1/c.f * 1/np.diff(self.tV)[0])
+    def periodo(self):
+        self.picos, _ = find_peaks(self.V, distance=0.9 * 1/c.F * 1/np.diff(self.tV)[0])
         return self.tV[self.picos[1]] - self.tV[self.picos[0]]
 
 
 class SeñalZoom(Señal):
-    def __init__(self, data_zoom, data_reff):
-        super().__init__(data_zoom)
-        self.SeñalReff = SeñalReff(data_reff)
+    def __init__(self, file_zoom, file_reff):
+        super().__init__(file_zoom)
+        self.SeñalReff = SeñalReff(file_reff)
         self.tf, self.If, self.Vf = self.filtro()
         self.P_avg, self.I_avg = self.potencia(self.SeñalReff.T)
 
     def filtro(self):
         dt = 50
-        i, f = np.where(self.I > 0.005)[0][0] - dt, np.where(self.I > 0.005)[0][-1] + dt
+        indices =  np.where(self.I > 0.005)[0]
+        i, f = indices[0] - dt, indices[-1] + dt
         t_filtro, y = np.linspace([self.tI[i], np.mean(self.I[i-dt:i])], [self.tI[f], np.mean(self.I[f:f+dt])], f-i).T
         I_filtro = self.I[i:f] - y
         V_filtro = self.V[i:f]
