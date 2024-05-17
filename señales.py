@@ -35,7 +35,8 @@ class SeñalZoom(Señal):
     def __init__(self, file_zoom, T):
         super().__init__(file_zoom)
         self.tf, self.If, self.Vf = self.filtro()
-        self.P_avg, self.I_avg = self.potencia(T)
+        self.P_avg = self.potencia(T)
+        self.I_avg = self.corriente()
 
     def filtro(self):
         dt = 50
@@ -47,9 +48,10 @@ class SeñalZoom(Señal):
         return t_filtro, I_filtro, V_filtro
     
     def potencia(self, T):
-        I_avg = np.mean(self.If)
-        P_avg = integrate.simpson(self.If * self.Vf, x=self.tf) / T
-        return P_avg, I_avg
+        return integrate.simpson(self.If * self.Vf, x=self.tf) / T
+    
+    def corriente(self):
+        return np.mean(self.If)
 
 
 class SeñalProm:
