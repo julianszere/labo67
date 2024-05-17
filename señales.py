@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
-import matplotlib.pyplot as plt
 from scipy import integrate
 from pathlib import Path
 import os
@@ -63,29 +62,15 @@ class SeñalProm:
         señalesZoom = []
         for file in os.listdir(folder):
             if file.endswith('.csv') and 'reff' in file:
-                señalReff = SeñalReff(file)
+                señalReff = SeñalReff(f'{folder}/{file}')
                 señalesReff.append(señalReff)
         for file in os.listdir(folder):
-            if file.endswith('.csv') and 'zoom' in file:
-                señalZoom = SeñalZoom(file, señalesReff[0].T)
+            if file.endswith('.csv') and 'reff' not in file:
+                señalZoom = SeñalZoom(f'{folder}/{file}', señalesReff[0].T)
                 señalesZoom.append(señalZoom)
         return señalesReff, señalesZoom
     
     def potencia(self):
-        P_avg = np.mean([señal.P for señal in self.señalesZoom], axis=0)
-        P_std = np.std([señal.P for señal in self.señalesZoom], axis=0)
+        P_avg = np.mean([señal.P_avg for señal in self.señalesZoom], axis=0)
+        P_std = np.std([señal.P_avg for señal in self.señalesZoom], axis=0)
         return P_avg, P_std
-
-
-class Test:
-    def periodo(self, señalReff):
-        plt.plot(señalReff.tV, señalReff.V)
-        plt.axvline(señalReff.tV[señalReff.picos[0]])
-        plt.axvline(señalReff.tV[señalReff.picos[1]])
-
-    def filtro(self, señalZoom):
-        plt.plot(señalZoom.tI*1000, señalZoom.I*1000, c='red', label='Original')
-        plt.plot(señalZoom.tf*1000, señalZoom.If*1000, c='blue', label='Filtrada')
-        plt.xlabel('T [s]', fontsize=20)
-        plt.ylabel('I [mA]', fontsize=20)
-        plt.legend()
