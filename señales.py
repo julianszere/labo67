@@ -62,13 +62,14 @@ class SeñalProm:
     def señales(self, folder):
         señalesReff = []
         señalesZoom = []
-        for file in os.listdir(folder):
+        folder_path = os.path.join(c.root, folder)
+        for file in os.listdir(folder_path):
             if file.endswith('.csv') and 'reff' in file:
-                señalReff = SeñalReff(f'{folder}/{file}')
+                señalReff = SeñalReff(os.path.join(folder_path, file))
                 señalesReff.append(señalReff)
-        for file in os.listdir(folder):
+        for file in os.listdir(folder_path):
             if file.endswith('.csv') and 'reff' not in file:
-                señalZoom = SeñalZoom(f'{folder}/{file}', señalesReff[0].T)
+                señalZoom = SeñalZoom(os.path.join(folder_path, file), señalesReff[0].T)
                 señalesZoom.append(señalZoom)
         return señalesReff, señalesZoom
     
