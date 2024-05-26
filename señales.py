@@ -58,11 +58,12 @@ class SeñalProm:
     def __init__(self, folder):
         self.señalesReff, self.señalesZoom = self.señales(folder)
         self.P_avg, self.P_std = self.potencia()
+        self.V_max, self.V_std = self.voltaje()
 
     def señales(self, folder):
         señalesReff = []
         señalesZoom = []
-        folder_path = os.path.join(c.root, folder)
+        folder_path = f'{c.ROOT}/{folder}'
         for file in os.listdir(folder_path):
             if file.endswith('.csv') and 'reff' in file:
                 señalReff = SeñalReff(os.path.join(folder_path, file))
@@ -77,3 +78,9 @@ class SeñalProm:
         P_avg = np.mean([señal.P_avg for señal in self.señalesZoom], axis=0)
         P_std = np.std([señal.P_avg for señal in self.señalesZoom], axis=0)
         return P_avg, P_std
+
+    def voltaje(self):
+        V_max = np.mean([np.max(señal.V) for señal in self.señalesZoom], axis=0)
+        V_std = np.std([np.max(señal.V) for señal in self.señalesZoom], axis=0)
+        return V_max, V_std
+    
