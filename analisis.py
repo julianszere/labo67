@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from señales import Señal, SeñalReff, SeñalZoom, SeñalProm
+from señales import Señal, SeñalReff, SeñalZoom, SeñalProm, eficiencia
 import tests
 import constantes as c
 import matplotlib.pyplot as plt
+import os
 
 params = {
     'figure.figsize': (11, 6),
@@ -128,15 +129,30 @@ plt.xlim(0.368, 0.378)
 '''
 Vemos si el período de la señal cambia durante el tratamiento del agua
 '''
-def plot(file, label):
-    s = SeñalReff(f'{c.ROOT}/28-05/{file}.csv')
-    plt.plot(s.tV, s.V, label=f'{round(1/s.T)} {label}')
+def freq(medicion):
+    print()
+    print(medicion)
+    folder_path = f'{c.ROOT}/28-05/{medicion}'
+    for file in os.listdir(folder_path):
+        if file.endswith('.csv') and 'reff' in file:
+            señalReff = SeñalReff(os.path.join(folder_path, file))
+            print(1/señalReff.T)
+            
+       
+freq('30min')
+freq('60min')
+freq('90min')
 
-plot('30min/reff-agua-e3e4 2024-05-28 16h 15m 39s', 1)
-plot('60min/reff-agua-e3e4 2024-05-28 16h 55m 29s', 2)
-plot('90min/reff-agua-e3e4 2024-05-28 17h 57m 11s', 3)
-
-plt.legend()
+#%%
+'''
+Evaluamos la potencia del tratamiento del 28/05
+'''
+s = SeñalProm('28-05/30min')
+print(f'{s.P_avg} +- {s.P_std}')
+s = SeñalProm('28-05/60min')
+print(f'{s.P_avg} +- {s.P_std}')
+s = SeñalProm('28-05/90min')
+print(f'{s.P_avg} +- {s.P_std}')
 
 #%%
 fig, axs = plt.subplots(1, 2, figsize=(12, 6))
@@ -175,3 +191,10 @@ plot('28-05/vidrio/13.5', 'blue')
 plot('28-05/vidrio/14.0', 'blue')
 plot('28-05/vidrio/14.5', 'blue')
 plot('28-05/vidrio/15.0', 'blue')
+
+#%%
+s = SeñalProm('4-06/60min')
+print(f'La potencia es {s.P_avg} +- {s.P_std}')
+DE, Y = eficiencia(1.482, 0.233, 135, s.P_avg)
+print(f'La eficiencia de degradación es {DE}')
+print(f'El rendimiento energético es {Y}')

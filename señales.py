@@ -94,5 +94,18 @@ class SeñalProm:
         I_avg = np.mean([señal.I_avg for señal in self.señalesZoom], axis=0)
         I_std = np.std([señal.I_avg for señal in self.señalesZoom], axis=0) # Dudas, ¿asi se calculaba el error del promedio de un promedio? Además, estamos con std de numpy que está sesgado
         return I_avg, I_std
+
+'''
+absor_ini: A_0, absorbancia inicial
+absor_fin: A_t, absorbancia final
+T: t, tiempo de tratamiento [min]
+pot: P, potencia [W]
+concent_ini: C_0, concentración inicial [mg/L]
+vol: V, volumen de la solución [ml]
+'''
+def eficiencia(absor_ini, absor_fin, T, pot, concent_ini=10, vol=200):
+    DE = (absor_ini - absor_fin) / absor_ini * 100
+    Y = 6 * concent_ini * DE * vol / (10**4 * pot * T)
+    return DE, Y
     
 #s = SeñalReff(f'{c.ROOT}/28-05/30min/reff-agua-e3e4 2024-05-28 16h 15m 39s.csv')
