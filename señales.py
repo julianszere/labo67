@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.signal import find_peaks
+from scipy.optimize import curve_fit
 from scipy import integrate
 from pathlib import Path
 import os
@@ -23,13 +24,17 @@ class Señal:
 class SeñalReff(Señal):
     def __init__(self, file):
         super().__init__(file)
-        self.T = self.periodo()
+        self.Vpp, self.Vpp_err, self.T, self.T_err = self.fit()
 
-    def periodo(self):
-        freq = 8000
-        self.picos, _ = find_peaks(self.V, distance=0.9 * 1/freq * 1/np.diff(self.tV)[0])
-        return self.tV[self.picos[1]] - self.tV[self.picos[0]]
-
+    def fit(self):
+        def sin(x, A, T, p, B): return A*np.sin(2*np.pi/T*x + p) + B
+        initialGuess = [7500, 1/8000, 0, 10000]
+        popt, pcov = curve_fit(sin, self.tV, self.V, p0=initialGuess)
+        perr = np.sqrt(np.diag(pcov))
+        A, T, p, B = popt
+        A_err, T_err, p_err, B_err = perr
+        return 2*A, 2*A_err, T, T_err
+        
 
 class SeñalZoom(Señal):
     def __init__(self, file_zoom, T):
@@ -58,11 +63,13 @@ class SeñalProm:
     def __init__(self, folder):
         self.señalesReff, self.señalesZoom = self.señales(folder)
         self.P_avg, self.P_std = self.potencia()
+        self.V_vpp, self.V_std = self.voltaje()
+        self.I_avg, self.I_std = self.corriente()
 
     def señales(self, folder):
         señalesReff = []
         señalesZoom = []
-        folder_path = os.path.join(c.root, folder)
+        folder_path = f'{c.ROOT}/{folder}'
         for file in os.listdir(folder_path):
             if file.endswith('.csv') and 'reff' in file:
                 señalReff = SeñalReff(os.path.join(folder_path, file))
@@ -77,3 +84,15 @@ class SeñalProm:
         P_avg = np.mean([señal.P_avg for señal in self.señalesZoom], axis=0)
         P_std = np.std([señal.P_avg for señal in self.señalesZoom], axis=0)
         return P_avg, P_std
+
+    def voltaje(self):
+        V_vpp = np.mean([señal.Vpp for señal in self.señalesReff], axis=0)
+        V_std = np.mean([señal.Vpp_err for señal in self.señalesReff], axis=0)
+        return V_vpp, V_std
+    
+    def corriente(self):
+        I_avg = np.mean([señal.I_avg for señal in self.señalesZoom], axis=0)
+        I_std = np.std([señal.I_avg for señal in self.señalesZoom], axis=0) # Dudas, ¿asi se calculaba el error del promedio de un promedio? Además, estamos con std de numpy que está sesgado
+        return I_avg, I_std
+    
+#s = SeñalReff(f'{c.ROOT}/28-05/30min/reff-agua-e3e4 2024-05-28 16h 15m 39s.csv')
