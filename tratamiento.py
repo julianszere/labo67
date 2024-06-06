@@ -106,11 +106,19 @@ class Concentracion:
     def concentracion(self):
         return self.A * c.F
 
-
+'''
+    absor_ini: A_0, absorbancia inicial
+    absor_fin: A_t, absorbancia final
+    T: t, tiempo de tratamiento [min]
+    pot: P, potencia [W]
+    concent_ini: C_0, concentración inicial [mg/L]
+    vol: V, volumen de la solución [ml]
+'''
 class Tratamiento:
-    def __init__(self, folder):
+    def __init__(self, folder, C_0=10, V=200):
         self.concent, self.señales = self.data(folder)
-        self.DE, self.Y = self.eficiencia(self.concent.A[0], self.concent.A[-1], self.concent.t[-1], self.señales.P_avg)
+        self.A_i, self.A_f, self.t_f, self.P, self.C_0, self.V = self.params(C_0, V)
+        self.DE, self.Y = self.eficiencia()
 
     def data(self, folder):
         folder_path = f'{c.ROOT}/{folder}'
@@ -120,22 +128,20 @@ class Tratamiento:
         señales = SeñalProm(f'{folder}/potencia')
         return concent, señales
     
-    '''
-    absor_ini: A_0, absorbancia inicial
-    absor_fin: A_t, absorbancia final
-    T: t, tiempo de tratamiento [min]
-    pot: P, potencia [W]
-    concent_ini: C_0, concentración inicial [mg/L]
-    vol: V, volumen de la solución [ml]
-    '''
-    def eficiencia(absor_ini, absor_fin, T, pot, concent_ini=10, vol=200):
-        DE = (absor_ini - absor_fin) / absor_ini * 100
-        Y = 6 * concent_ini * DE * vol / (10**4 * pot * T)
+    def params(self, C_0, V):
+        A_i, A_f = self.concent.A[0], self.concent.A[-1]
+        t_f = self.concent.t[-1]
+        P = self.señales.P_avg
+        return A_i, A_f, t_f, P, C_0, V
+    
+    def eficiencia(self):
+        DE = (self.A_i - self.A_f) / self.A_i * 100
+        Y = 6 * self.C_0 * DE * self.V / (10**4 * self.P * self.t_f)
         return DE, Y
     
     def __str__(self):
         return f'''
-                    P = {self.señales.P_avg} ± {self.señales.P_std}
+                    P = {self.P} ± {self.señales.P_std}
                     I = {self.señales.I_avg} ± {self.señales.I_std}
                     V = {self.señales.V_vpp} ± {self.señales.V_std}
                     DE = {self.DE}
