@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from señales import Señal, SeñalReff, SeñalZoom, SeñalProm, eficiencia
+from tratamiento import Señal, SeñalReff, SeñalZoom, SeñalProm, eficiencia
 import tests
 import constantes as c
 import matplotlib.pyplot as plt
