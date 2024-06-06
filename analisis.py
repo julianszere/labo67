@@ -193,8 +193,11 @@ plot('28-05/vidrio/14.5', 'blue')
 plot('28-05/vidrio/15.0', 'blue')
 
 #%%
-s = SeñalProm('4-06/60min')
+'''
+
+'''
+s = SeñalProm('4-06/potencia')
 print(f'La potencia es {s.P_avg} +- {s.P_std}')
-DE, Y = eficiencia(1.482, 0.233, 135, s.P_avg)
+DE, Y = eficiencia(1.482, 0.226, 140, s.P_avg)
 print(f'La eficiencia de degradación es {DE}')
 print(f'El rendimiento energético es {Y}')
