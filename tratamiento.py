@@ -5,7 +5,7 @@ from scipy import integrate
 from pathlib import Path
 import os
 import constantes as c
-
+import matplotlib.pyplot as plt
 
 class Señal:
     def __init__(self, file):
@@ -139,11 +139,18 @@ class Tratamiento:
         Y = 6 * self.C_0 * DE * self.V / (10**4 * self.P * self.t_f)
         return DE, Y
     
+    def plot(self, label=None):
+        color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
+        plt.plot(self.concent.t, self.concent.A, color=color, label=label, marker='o')
+        plt.xlabel('Tiempo [min]', fontsize=20)
+        plt.ylabel('Absorbancia', fontsize=20)
+    
     def __str__(self):
         return f'''
-                    P = {self.P} ± {self.señales.P_std}
-                    I = {self.señales.I_avg} ± {self.señales.I_std}
-                    V = {self.señales.V_vpp} ± {self.señales.V_std}
-                    DE = {self.DE}
-                    Y = {self.Y}
+                    P = {self.P:.2f} ± {self.señales.P_std:.2f} W
+                    I = {self.señales.I_avg*1000:.2f} ± {self.señales.I_std*1000:.2f} mA
+                    V = {self.señales.V_vpp/1000:.2f} ± {self.señales.V_std/1000:.2f} kV
+                    DE = {self.DE:.2f}
+                    Y = {self.Y:.2f} g/kWh
                 '''
+

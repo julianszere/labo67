@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from tratamiento import Señal, SeñalReff, SeñalZoom, SeñalProm, eficiencia
+from tratamiento import Señal, SeñalReff, SeñalZoom, SeñalProm, Concentracion, Tratamiento
 import tests
 import constantes as c
 import matplotlib.pyplot as plt
@@ -193,11 +193,29 @@ plot('28-05/vidrio/14.5', 'blue')
 plot('28-05/vidrio/15.0', 'blue')
 
 #%%
+''' 
+Mostramos los resultados del tratamiento de hoy
 '''
+print(Tratamiento('04-06'))
 
+#%%
 '''
-s = SeñalProm('4-06/potencia')
-print(f'La potencia es {s.P_avg} +- {s.P_std}')
-DE, Y = eficiencia(1.482, 0.226, 140, s.P_avg)
-print(f'La eficiencia de degradación es {DE}')
-print(f'El rendimiento energético es {Y}')
+Vemos cómo se ven las corrientes porque una medición se tomó mal
+'''
+señales = SeñalProm('06-06').señalesZoom
+for s in señales:
+    plt.plot(s.tf, s.If)
+    
+#%%
+'''
+Comparamos las mediciones de hoy con vidrio con las de teflón de la vez pasada
+'''
+teflon = Tratamiento('04-06')
+vidrio = Tratamiento('06-06')
+teflon.plot(label='Teflón')
+vidrio.plot(label='Vidrio')
+plt.legend()
+    
+print('vidrio', vidrio)
+print('teflon', teflon)
+
