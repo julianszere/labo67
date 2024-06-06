@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from scipy.signal import find_peaks
 from scipy.optimize import curve_fit
 from scipy import integrate
 from pathlib import Path
@@ -61,12 +60,12 @@ class SeñalZoom(Señal):
 
 class SeñalProm:
     def __init__(self, folder):
-        self.señalesReff, self.señalesZoom = self.señales(folder)
+        self.señalesReff, self.señalesZoom = self.data(folder)
         self.P_avg, self.P_std = self.potencia()
         self.V_vpp, self.V_std = self.voltaje()
         self.I_avg, self.I_std = self.corriente()
 
-    def señales(self, folder):
+    def data(self, folder):
         señalesReff = []
         señalesZoom = []
         folder_path = f'{c.ROOT}/{folder}'
