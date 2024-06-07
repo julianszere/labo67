@@ -1,11 +1,12 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.optimize import curve_fit
 from scipy import integrate
 from pathlib import Path
 import os
+import glob
 import constantes as c
-import matplotlib.pyplot as plt
 
 class Señal:
     def __init__(self, file):
@@ -69,6 +70,7 @@ class SeñalProm:
         señalesReff = []
         señalesZoom = []
         folder_path = f'{c.ROOT}/{folder}'
+        # cambiar por  glob.glob(os.path.join(c.ROOT, folder, 'reff', '*.csv')
         for file in os.listdir(folder_path):
             if file.endswith('.csv') and 'reff' in file:
                 señalReff = SeñalReff(os.path.join(folder_path, file))
@@ -98,13 +100,25 @@ class SeñalProm:
 class Concentracion:
     def __init__(self, file):
         self.t, self.A = self.txt(file)
+        self.A_i, self.A_f, self.t_f = self.params()
         self.C = self.concentracion()
 
     def txt(self, file):
         return np.loadtxt(Path(file).expanduser(), skiprows=1).T
     
+    def params(self, C_0, V):
+        A_i, A_f = self.A[0], self.A[-1]
+        t_f = self.t[-1]
+        return A_i, A_f, t_f
+
     def concentracion(self):
         return self.A * c.F
+    
+    def plot(self, label=None):
+        color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
+        plt.plot(self.t, self.A, color=color, label=label, marker='o')
+        plt.xlabel('Tiempo [min]', fontsize=20)
+        plt.ylabel('Absorbancia', fontsize=20)
 
 '''
     absor_ini: A_0, absorbancia inicial
@@ -114,43 +128,23 @@ class Concentracion:
     concent_ini: C_0, concentración inicial [mg/L]
     vol: V, volumen de la solución [ml]
 '''
-class Tratamiento:
+class Tratamiento(SeñalProm, Concentracion):
     def __init__(self, folder, C_0=10, V=200):
-        self.concent, self.señales = self.data(folder)
-        self.A_i, self.A_f, self.t_f, self.P, self.C_0, self.V = self.params(C_0, V)
+        SeñalProm.__init__(self, folder)
+        Concentracion.__init__(self, glob.glob(os.path.join(c.ROOT, folder, '*.txt')))
+        self.C_0, self.V = C_0, V
         self.DE, self.Y = self.eficiencia()
-
-    def data(self, folder):
-        folder_path = f'{c.ROOT}/{folder}'
-        for file in os.listdir(folder_path):
-            if file.endswith('.txt') and 'tratamiento' in file:
-                concent = Concentracion(os.path.join(folder_path, file))
-        señales = SeñalProm(f'{folder}/potencia')
-        return concent, señales
-    
-    def params(self, C_0, V):
-        A_i, A_f = self.concent.A[0], self.concent.A[-1]
-        t_f = self.concent.t[-1]
-        P = self.señales.P_avg
-        return A_i, A_f, t_f, P, C_0, V
     
     def eficiencia(self):
         DE = (self.A_i - self.A_f) / self.A_i * 100
-        Y = 6 * self.C_0 * DE * self.V / (10**4 * self.P * self.t_f)
+        Y = 6 * self.C_0 * DE * self.V / (10**4 * self.P_avg * self.t_f)
         return DE, Y
-    
-    def plot(self, label=None):
-        color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
-        plt.plot(self.concent.t, self.concent.A, color=color, label=label, marker='o')
-        plt.xlabel('Tiempo [min]', fontsize=20)
-        plt.ylabel('Absorbancia', fontsize=20)
     
     def __str__(self):
         return f'''
-                    P = {self.P:.2f} ± {self.señales.P_std:.2f} W
-                    I = {self.señales.I_avg*1000:.2f} ± {self.señales.I_std*1000:.2f} mA
-                    V = {self.señales.V_vpp/1000:.2f} ± {self.señales.V_std/1000:.2f} kV
+                    P = {self.P_avg:.2f} ± {self.P_std:.2f} W
+                    I = {self.I_avg*1000:.2f} ± {self.I_std*1000:.2f} mA
+                    V = {self.V_vpp/1000:.2f} ± {self.V_std/1000:.2f} kV
                     DE = {self.DE:.2f}
                     Y = {self.Y:.2f} g/kWh
                 '''
-
