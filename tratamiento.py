@@ -106,7 +106,7 @@ class Concentracion:
     def txt(self, file):
         return np.loadtxt(Path(file).expanduser(), skiprows=1).T
     
-    def params(self, C_0, V):
+    def params(self):
         A_i, A_f = self.A[0], self.A[-1]
         t_f = self.t[-1]
         return A_i, A_f, t_f
@@ -140,11 +140,11 @@ class Tratamiento(SeñalProm, Concentracion):
         Y = 6 * self.C_0 * DE * self.V / (10**4 * self.P_avg * self.t_f)
         return DE, Y
     
-    def __str__(self):
+    def __repr__(self):
         return f'''
                     P = {self.P_avg:.2f} ± {self.P_std:.2f} W
                     I = {self.I_avg*1000:.2f} ± {self.I_std*1000:.2f} mA
                     V = {self.V_vpp/1000:.2f} ± {self.V_std/1000:.2f} kV
-                    DE = {self.DE:.2f}
+                    DE = {self.DE:.2f} %
                     Y = {self.Y:.2f} g/kWh
                 '''
