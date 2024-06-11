@@ -1,0 +1,2 @@
+Tiempo [min]	Absorbancia
+0	0.332
