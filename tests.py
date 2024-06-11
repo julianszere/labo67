@@ -16,8 +16,3 @@ def filtro(señalZoom):
     plt.xlabel('T [ms]', fontsize=20)
     plt.ylabel('I [mA]', fontsize=20)
     plt.legend()
-
-def hola():
-    print('hola')
-    
-a = 10

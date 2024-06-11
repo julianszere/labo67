@@ -24,9 +24,9 @@ class Señal:
 class SeñalReff(Señal):
     def __init__(self, file):
         super().__init__(file)
-        self.Vpp, self.Vpp_err, self.T, self.T_err = self.fit()
+        self.Vpp, self.Vpp_err, self.T, self.T_err = self.fit_sin()
 
-    def fit(self):
+    def fit_sin(self):
         def sin(x, A, T, p, B): return A*np.sin(2*np.pi/T*x + p) + B
         initialGuess = [7500, 1/8000, 0, 10000]
         popt, pcov = curve_fit(sin, self.tV, self.V, p0=initialGuess)
@@ -129,17 +129,17 @@ class Concentracion:
     vol: V, volumen de la solución [ml]
 '''
 class Tratamiento(SeñalProm, Concentracion):
-    def __init__(self, folder, C_0=10, V=200):
+    def __init__(self, folder, C_0=10, V_0=200):
         SeñalProm.__init__(self, folder)
         Concentracion.__init__(self, glob.glob(os.path.join(c.ROOT, folder, '*.txt'))[0])
-        self.C_0, self.V = C_0, V
+        self.C_0, self.V_0 = C_0, V_0
         self.DE, self.Y = self.eficiencia()
     
     def eficiencia(self):
         DE = (self.A_i - self.A_f) / self.A_i * 100
-        Y = 6 * self.C_0 * DE * self.V / (10**4 * self.P_avg * self.t_f)
+        Y = 6 * self.C_0 * DE * self.V_0 / (10**4 * self.P_avg * self.t_f)
         return DE, Y
-    
+
     def __repr__(self):
         return f'''
                     P = {self.P_avg:.2f} ± {self.P_std:.2f} W
