@@ -160,7 +160,7 @@ plt.subplots_adjust(wspace=0.05)
 def plot(folder, color, label=None):
     s = SeñalProm(folder)
     señales = s.señalesZoom
-    #plt.errorbar(señales[2].tf, señales[2].If, label=volt)
+    #plt.errorbar(señales[2].t, señales[2].I, label=volt)
     #plt.errorbar(s.I_avg * 1000, s.P_avg, s.P_std, s.I_std * 1000, c=color, label=label)
     #plt.errorbar(s.V_vpp / 1000, s.P_avg, s.P_std, s.V_std / 1000, c=color, label=label)
         
@@ -204,18 +204,23 @@ Vemos cómo se ven las corrientes porque una medición se tomó mal
 '''
 señales = SeñalProm('06-06').señalesZoom
 for s in señales:
-    plt.plot(s.tf, s.If)
+    plt.plot(s.t, s.I)
     
 #%%
 '''
-Comparamos las mediciones de hoy con vidrio con las de teflón de la vez pasada
+Comparamos las mediciones con vidrio, las de teflón y las de acrílico
 '''
-teflon = Tratamiento('04-06')
-vidrio = Tratamiento('06-06')
+teflon = Tratamiento('04-06/tratamiento-e4')
+vidrio = Tratamiento('06-06/tratamiento-e5')
+acrilico = Tratamiento('11-06/tratamiento-e3')
 teflon.plot(label='Teflón')
 vidrio.plot(label='Vidrio')
+acrilico.plot(label='Acrílico')
 plt.legend()
     
 print('vidrio', vidrio)
 print('teflon', teflon)
+print('acrílico', acrilico)
+
+#%%
 

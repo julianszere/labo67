@@ -39,7 +39,7 @@ class SeñalReff(Señal):
 class SeñalZoom(Señal):
     def __init__(self, file_zoom, T):
         super().__init__(file_zoom)
-        self.tf, self.If, self.Vf = self.filtro()
+        self.t, self.I, self.V = self.filtro()
         self.P_avg = self.potencia(T)
         self.I_avg = self.corriente()
 
@@ -53,10 +53,10 @@ class SeñalZoom(Señal):
         return t_filtro, I_filtro, V_filtro
     
     def potencia(self, T):
-        return integrate.simpson(self.If * self.Vf, x=self.tf) / T
+        return integrate.simpson(self.I * self.V, x=self.t) / T
     
     def corriente(self):
-        return np.mean(self.If)
+        return np.mean(self.I)
 
 
 class SeñalProm:
@@ -131,7 +131,7 @@ class Concentracion:
 class Tratamiento(SeñalProm, Concentracion):
     def __init__(self, folder, C_0=10, V=200):
         SeñalProm.__init__(self, folder)
-        Concentracion.__init__(self, glob.glob(os.path.join(c.ROOT, folder, '*.txt')))
+        Concentracion.__init__(self, glob.glob(os.path.join(c.ROOT, folder, '*.txt'))[0])
         self.C_0, self.V = C_0, V
         self.DE, self.Y = self.eficiencia()
     
