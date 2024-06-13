@@ -138,7 +138,11 @@ class Tratamiento(SeñalProm, Concentracion):
     def eficiencia(self):
         DE = (self.A_i - self.A_f) / self.A_i * 100
         Y = 6 * self.C_0 * DE * self.V_0 / (10**4 * self.P_avg * self.t_f)
-        return DE, Y
+        return DE, 
+    
+    def eficiencia_err(self):
+        DE = (u(self.A_i, 0.03*self.A_i) - u(self.A_f, 0.03*self.A_f)) / u(self.A_i, 0.03*self.A_i) * 100
+        Y = 6 * u(self.C_0, ) * DE * u(self.V_0, 10) / (10**4 * u(self.P_avg, self.P_std) * u(self.t_f, 0.5))
 
     def __repr__(self):
         return f'''

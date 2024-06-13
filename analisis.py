@@ -224,3 +224,12 @@ print('acrílico', acrilico)
 
 #%%
 
+teflon_solo = Tratamiento('04-06/tratamiento-e4')
+teflon_tio2 = Tratamiento('13-06/tratamiento-e4-TiO2')
+
+teflon_solo.plot(label='teflon solo')
+teflon_tio2.plot(label='teflon TiO2')
+plt.legend()
+
+print(teflon_solo)
+print(teflon_tio2)
