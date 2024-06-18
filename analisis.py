@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-
+#%%
 from tratamiento import Señal, SeñalReff, SeñalZoom, SeñalProm, Concentracion, Tratamiento
 import tests
 import constantes as c
@@ -225,11 +224,16 @@ print('acrílico', acrilico)
 #%%
 
 teflon_solo = Tratamiento('04-06/tratamiento-e4')
+teflon_vidr = Tratamiento('18-06/tratamiento-e4-vidrio')
 teflon_tio2 = Tratamiento('13-06/tratamiento-e4-TiO2')
 
-teflon_solo.plot(label='teflon solo')
-teflon_tio2.plot(label='teflon TiO2')
+teflon_solo.plot(label='Teflón sin vidrio')
+teflon_vidr.plot(label='Teflón con vidrio')
+teflon_tio2.plot(label='Teflón con vidrio y TiO2')
 plt.legend()
 
 print(teflon_solo)
+print(teflon_vidr)
 print(teflon_tio2)
+
+# %%
