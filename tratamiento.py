@@ -95,6 +95,12 @@ class SeñalProm:
         I_avg = np.mean([señal.I_avg for señal in self.señalesZoom], axis=0)
         I_std = np.std([señal.I_avg for señal in self.señalesZoom], axis=0) # Dudas, ¿asi se calculaba el error del promedio de un promedio? Además, estamos con std de numpy que está sesgado
         return I_avg, I_std
+    
+    def __repr__(self):
+        return f'''
+                    I = {self.I_avg*1000:.2f} ± {self.I_std*1000:.2f} mA
+                    V = {self.V_vpp/1000:.2f} ± {self.V_std/1000:.2f} kV
+                    P = {self.P_avg:.2f} ± {self.P_std:.2f} W'''
 
 
 class Concentracion:
@@ -102,6 +108,7 @@ class Concentracion:
         self.t, self.A = self.txt(file)
         self.A_i, self.A_f, self.t_f = self.params()
         self.C = self.concentracion()
+        self.DE = self.degradaciones()
 
     def txt(self, file):
         return np.loadtxt(Path(file).expanduser(), skiprows=1).T
@@ -116,9 +123,16 @@ class Concentracion:
     
     def plot(self, label=None):
         color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
-        plt.plot(self.t, self.A, color=color, label=label, marker='o')
+        #plt.plot(self.t, self.A, color=color, label=label, marker='o')
+        plt.plot(self.t, self.DE, color=color, label=label, marker='o')
         plt.xlabel('Tiempo [min]', fontsize=20)
-        plt.ylabel('Absorbancia', fontsize=20)
+        plt.ylabel('Porcentaje removido (%)', fontsize=20)
+        
+    def degradaciones(self):
+        return (self.A_i - self.A) / self.A_i * 100
+    
+    def __repr__(self):
+        return f'''DE = {self.DE[-1]:.2f} %'''
 
 '''
     absor_ini: A_0, absorbancia inicial
@@ -133,22 +147,21 @@ class Tratamiento(SeñalProm, Concentracion):
         SeñalProm.__init__(self, folder)
         Concentracion.__init__(self, glob.glob(os.path.join(c.ROOT, folder, '*.txt'))[0])
         self.C_0, self.V_0 = C_0, V_0
-        self.DE, self.Y = self.eficiencia()
+        self.Y = self.eficiencia()
+        #print(self.__repr__())
     
     def eficiencia(self):
-        DE = (self.A_i - self.A_f) / self.A_i * 100
-        Y = 6 * self.C_0 * DE * self.V_0 / (10**4 * self.P_avg * self.t_f)
-        return DE, Y
+        return 6 * self.C_0 * self.DE * self.V_0 / (10**4 * self.P_avg * self.t_f)
     
-    def eficiencia_err(self):
-        DE = (u(self.A_i, 0.03*self.A_i) - u(self.A_f, 0.03*self.A_f)) / u(self.A_i, 0.03*self.A_i) * 100
-        Y = 6 * u(self.C_0, ) * DE * u(self.V_0, 10) / (10**4 * u(self.P_avg, self.P_std) * u(self.t_f, 0.5))
+    def plot2(self, label):
+        color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
+        plt.plot(self.t, self.Y, color=color, label=label, marker='o')
 
     def __repr__(self):
+        señalesRepr = SeñalProm.__repr__(self)
+        concentRepr = Concentracion.__repr__(self)
         return f'''
-                    P = {self.P_avg:.2f} ± {self.P_std:.2f} W
-                    I = {self.I_avg*1000:.2f} ± {self.I_std*1000:.2f} mA
-                    V = {self.V_vpp/1000:.2f} ± {self.V_std/1000:.2f} kV
-                    DE = {self.DE:.2f} %
+                    {señalesRepr}
+                    {concentRepr}
                     Y = {self.Y:.2f} g/kWh
                 '''
