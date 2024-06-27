@@ -67,18 +67,9 @@ class SeñalProm:
         self.I_avg, self.I_std = self.corriente()
 
     def data(self, folder):
-        señalesReff = []
-        señalesZoom = []
-        folder_path = f'{c.ROOT}/{folder}'
-        # cambiar por  glob.glob(os.path.join(c.ROOT, folder, 'reff', '*.csv')
-        for file in os.listdir(folder_path):
-            if file.endswith('.csv') and 'reff' in file:
-                señalReff = SeñalReff(os.path.join(folder_path, file))
-                señalesReff.append(señalReff)
-        for file in os.listdir(folder_path):
-            if file.endswith('.csv') and 'reff' not in file:
-                señalZoom = SeñalZoom(os.path.join(folder_path, file), señalesReff[0].T)
-                señalesZoom.append(señalZoom)
+        files = glob.glob(os.path.join(c.ROOT, folder, '*.csv'))
+        señalesReff = [SeñalReff(file) for file in files if 'reff' in os.path.basename(file)]
+        señalesZoom = [SeñalZoom(file, señalesReff[0].T) for file in files if 'reff' not in os.path.basename(file)]
         return señalesReff, señalesZoom
     
     def potencia(self):
@@ -148,7 +139,7 @@ class Tratamiento(SeñalProm, Concentracion):
         Concentracion.__init__(self, glob.glob(os.path.join(c.ROOT, folder, '*.txt'))[0])
         self.C_0, self.V_0 = C_0, V_0
         self.Y = self.eficiencia()
-        #print(self.__repr__())
+        print(self.__repr__())
     
     def eficiencia(self):
         return 6 * self.C_0 * self.DE * self.V_0 / (10**4 * self.P_avg * self.t_f)
@@ -163,5 +154,5 @@ class Tratamiento(SeñalProm, Concentracion):
         return f'''
                     {señalesRepr}
                     {concentRepr}
-                    Y = {self.Y:.2f} g/kWh
+                    Y = {self.Y[-1]:.2f} g/kWh
                 '''

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#%%
 from tratamiento import Señal, SeñalReff, SeñalZoom, SeñalProm, Concentracion, Tratamiento
 import tests
 import constantes as c
@@ -213,14 +213,10 @@ Comparamos las mediciones con vidrio, las de teflón y las de acrílico
 teflon = Tratamiento('04-06/tratamiento-e4')
 vidrio = Tratamiento('06-06/tratamiento-e5')
 acrilico = Tratamiento('11-06/tratamiento-e3')
-teflon.plot(label='Teflón')
-vidrio.plot(label='Vidrio')
-acrilico.plot(label='Acrílico')
+teflon.plot2(label='Teflón')
+vidrio.plot2(label='Vidrio')
+acrilico.plot2(label='Acrílico')
 plt.legend()
-    
-print('vidrio', vidrio)
-print('teflon', teflon)
-print('acrílico', acrilico)
 
 #%%
 
@@ -253,3 +249,5 @@ plt.xlabel('Tiempo [min]', fontsize=20)
 plt.ylabel('$Y$ [g/kWh]', fontsize=20)
 plt.legend()
 
+
+# %%
