@@ -7,6 +7,7 @@ from pathlib import Path
 import os
 import glob
 import constantes as c
+from uncertainties.unumpy import uarray, nominal_values
 
 class Señal:
     def __init__(self, file):
@@ -59,6 +60,7 @@ class SeñalZoom(Señal):
         return np.mean(self.I)
 
 
+
 class SeñalProm:
     def __init__(self, folder):
         self.señalesReff, self.señalesZoom = self.data(folder)
@@ -103,7 +105,9 @@ class Concentracion:
         self.color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
 
     def txt(self, file):
-        return np.loadtxt(Path(file).expanduser(), skiprows=1).T
+        t, A = np.loadtxt(Path(file).expanduser(), skiprows=1).T
+        return uarray(t, np.ones(len(t)) * c.T_ERR), uarray(A, A * c.A_ERR)
+        #return np.loadtxt(Path(file).expanduser(), skiprows=1).T
     
     def params(self):
         A_i, A_f = self.A[0], self.A[-1]
@@ -146,10 +150,10 @@ class Tratamiento(SeñalProm, Concentracion):
         print(self.__repr__())
     
     def eficiencia(self):
-        return 6 * self.C_0 * self.DE * self.V_0 / (10**4 * self.P_avg * self.t)
+        return 6 * self.C_0 * self.DE[1:] * self.V_0 / (10**4 * self.P_avg * self.t[1:])
     
     def plot_eficiencia(self, label):
-        plt.plot(self.t, self.Y, color=self.color, label=label, marker='o')
+        plt.plot(nominal_values(self.t[1:]), nominal_values(self.Y), color=self.color, label=label, marker='o')
         plt.xlabel('Tiempo [min]', fontsize=20)
         plt.ylabel('$Y$ [g/kWh]', fontsize=20)
         

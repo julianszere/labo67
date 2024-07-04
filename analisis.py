@@ -215,9 +215,9 @@ Comparamos las mediciones con vidrio, las de teflón y las de acrílico
 teflon = Tratamiento('04-06/tratamiento-e4')
 vidrio = Tratamiento('06-06/tratamiento-e5')
 acrilico = Tratamiento('11-06/tratamiento-e3')
-teflon.plot2(label='Teflón')
-vidrio.plot2(label='Vidrio')
-acrilico.plot2(label='Acrílico')
+teflon.plot_eficiencia(label='Teflón')
+vidrio.plot_eficiencia(label='Vidrio')
+acrilico.plot_eficiencia(label='Acrílico')
 plt.legend()
 
 #%%
@@ -226,9 +226,9 @@ teflon_solo = Tratamiento('04-06/tratamiento-e4')
 teflon_vidr = Tratamiento('18-06/tratamiento-e4-vidrio')
 teflon_tio2 = Tratamiento('13-06/tratamiento-e4-TiO2')
 
-teflon_solo.plot(label='Teflón sin vidrio')
-teflon_vidr.plot(label='Teflón con vidrio')
-teflon_tio2.plot(label='Teflón con recubrimiento TiO$_2$')
+teflon_solo.plot_concentracion(label='Teflón sin vidrio')
+teflon_vidr.plot_concentracion(label='Teflón con vidrio')
+teflon_tio2.plot_concentracion(label='Teflón con recubrimiento TiO$_2$')
 plt.legend()
 
 print(teflon_solo)
@@ -251,6 +251,7 @@ teflon_tio2_repetida.plot_eficiencia(label='Teflón con TiO$_2$ repetida')
 plt.legend()
 
 
+
 # %%
 concentracion, absorbancia = np.loadtxt(os.path.join(c.ROOT, '27-06/concentracion-absorbancia.txt'), skiprows=1).T
 plt.scatter(absorbancia, concentracion, label='Mediciones', c='blue')
@@ -268,8 +269,3 @@ plt.plot(absorbancia, lineal(absorbancia, m, b), label='Ajuste lineal', c='red')
 plt.xlabel('Absorbancia', fontsize=20)
 plt.ylabel('Concentración [mg/L]', fontsize=20)
 
-#%%
-teflon_solo = Tratamiento('04-06/tratamiento-e4')
-teflon_solo.plot_concentracion()
-plt.show()
-teflon_solo.plot_degradacion()
