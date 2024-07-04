@@ -237,17 +237,19 @@ print(teflon_tio2)
 #teflon_solo = Tratamiento('04-06/tratamiento-e4')
 #teflon_solo.plot2(label='Teflón sin vidrio')
 
-teflon_solo_vidrio = Tratamiento('18-06/tratamiento-e4-vidrio')
-teflon_solo_vidrio.plot2(label='Teflón con vidrio')
+teflon_solo_vidrio = Tratamiento('18-06/tratamiento-e4-vidrio', V_0=180)
+teflon_solo_vidrio.plot(label='Teflón con vidrio')
 
 teflon_tio2_original = Tratamiento('13-06/tratamiento-e4-TiO2')
-teflon_tio2_original.plot2(label='Teflón con recubrimiento TiO$_2$')
+teflon_tio2_original.plot(label='Teflón con recubrimiento TiO$_2$')
 
 teflon_tio2_repetida = Tratamiento('25-06/tratamiento-e4-titanio')
-teflon_tio2_repetida.plot2(label='Teflón con TiO$_2$ repetida')
+teflon_tio2_repetida.plot(label='Teflón con TiO$_2$ repetida')
 plt.xlabel('Tiempo [min]', fontsize=20)
 plt.ylabel('$Y$ [g/kWh]', fontsize=20)
 plt.legend()
 
 
 # %%
+concentracion, absorbancia = np.loadtxt(os.path.join(c.ROOT, '27-06/concentracion-absorbancia.txt'), skiprows=1).T
+plt.scatter(absorbancia, concentracion)

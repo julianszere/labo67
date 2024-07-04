@@ -142,7 +142,7 @@ class Tratamiento(SeñalProm, Concentracion):
         print(self.__repr__())
     
     def eficiencia(self):
-        return 6 * self.C_0 * self.DE * self.V_0 / (10**4 * self.P_avg * self.t_f)
+        return 6 * self.C_0 * self.DE * self.V_0 / (10**4 * self.P_avg * self.t)
     
     def plot2(self, label):
         color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
