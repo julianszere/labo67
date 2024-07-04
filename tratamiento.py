@@ -100,6 +100,7 @@ class Concentracion:
         self.A_i, self.A_f, self.t_f = self.params()
         self.C = self.concentracion()
         self.DE = self.degradaciones()
+        self.color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
 
     def txt(self, file):
         return np.loadtxt(Path(file).expanduser(), skiprows=1).T
@@ -112,15 +113,18 @@ class Concentracion:
     def concentracion(self):
         return self.A * c.F
     
-    def plot(self, label=None):
-        color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
-        #plt.plot(self.t, self.A, color=color, label=label, marker='o')
-        plt.plot(self.t, self.DE, color=color, label=label, marker='o')
-        plt.xlabel('Tiempo [min]', fontsize=20)
-        plt.ylabel('Porcentaje removido (%)', fontsize=20)
-        
     def degradaciones(self):
         return (self.A_i - self.A) / self.A_i * 100
+    
+    def plot_concentracion(self, label=None):
+        plt.plot(self.t, self.C, color=self.color, label=label, marker='o')
+        plt.xlabel('Tiempo [min]', fontsize=20)
+        plt.ylabel('Concentración [mg/L]', fontsize=20)
+    
+    def plot_degradacion(self, label=None):
+        plt.plot(self.t, self.DE, color=self.color, label=label, marker='o')
+        plt.xlabel('Tiempo [min]', fontsize=20)
+        plt.ylabel('Porcentaje removido (%)', fontsize=20)
     
     def __repr__(self):
         return f'''DE = {self.DE[-1]:.2f} %'''
@@ -144,10 +148,11 @@ class Tratamiento(SeñalProm, Concentracion):
     def eficiencia(self):
         return 6 * self.C_0 * self.DE * self.V_0 / (10**4 * self.P_avg * self.t)
     
-    def plot2(self, label):
-        color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
-        plt.plot(self.t, self.Y, color=color, label=label, marker='o')
-
+    def plot_eficiencia(self, label):
+        plt.plot(self.t, self.Y, color=self.color, label=label, marker='o')
+        plt.xlabel('Tiempo [min]', fontsize=20)
+        plt.ylabel('$Y$ [g/kWh]', fontsize=20)
+        
     def __repr__(self):
         señalesRepr = SeñalProm.__repr__(self)
         concentRepr = Concentracion.__repr__(self)

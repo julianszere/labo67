@@ -5,6 +5,8 @@ import tests
 import constantes as c
 import matplotlib.pyplot as plt
 import os
+import numpy as np
+from scipy.optimize import curve_fit
 
 params = {
     'figure.figsize': (11, 6),
@@ -238,18 +240,36 @@ print(teflon_tio2)
 #teflon_solo.plot2(label='Teflón sin vidrio')
 
 teflon_solo_vidrio = Tratamiento('18-06/tratamiento-e4-vidrio', V_0=180)
-teflon_solo_vidrio.plot(label='Teflón con vidrio')
+teflon_solo_vidrio.plot_eficiencia(label='Teflón con vidrio')
 
 teflon_tio2_original = Tratamiento('13-06/tratamiento-e4-TiO2')
-teflon_tio2_original.plot(label='Teflón con recubrimiento TiO$_2$')
+teflon_tio2_original.plot_eficiencia(label='Teflón con recubrimiento TiO$_2$')
 
 teflon_tio2_repetida = Tratamiento('25-06/tratamiento-e4-titanio')
-teflon_tio2_repetida.plot(label='Teflón con TiO$_2$ repetida')
-plt.xlabel('Tiempo [min]', fontsize=20)
-plt.ylabel('$Y$ [g/kWh]', fontsize=20)
+teflon_tio2_repetida.plot_eficiencia(label='Teflón con TiO$_2$ repetida')
+
 plt.legend()
 
 
 # %%
 concentracion, absorbancia = np.loadtxt(os.path.join(c.ROOT, '27-06/concentracion-absorbancia.txt'), skiprows=1).T
-plt.scatter(absorbancia, concentracion)
+plt.scatter(absorbancia, concentracion, label='Mediciones', c='blue')
+
+def lineal(x, m, b):
+    return m*x + b
+
+popt, pcov = curve_fit(lineal, absorbancia, concentracion)
+perr = np.sqrt(np.diag(pcov))
+m, b = popt
+m_err, b_err = perr
+
+plt.plot(absorbancia, lineal(absorbancia, m, b), label='Ajuste lineal', c='red')
+
+plt.xlabel('Absorbancia', fontsize=20)
+plt.ylabel('Concentración [mg/L]', fontsize=20)
+
+#%%
+teflon_solo = Tratamiento('04-06/tratamiento-e4')
+teflon_solo.plot_concentracion()
+plt.show()
+teflon_solo.plot_degradacion()
