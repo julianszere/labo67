@@ -46,6 +46,7 @@ class SeñalZoom(Señal):
 
     def filtro(self):
         dt = 50
+        # 0.005 np.max(self.I)/2
         indices =  np.where(self.I > 0.005)[0]
         i, f = indices[0] - dt, indices[-1] + dt
         t_filtro, y = np.linspace([self.tI[i], np.mean(self.I[i-dt:i])], [self.tI[f], np.mean(self.I[f:f+dt])], f-i).T

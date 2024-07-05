@@ -1,0 +1,6 @@
+Tiempo [min]	Absorbancia
+0	1.571
+5
+10
+15
+20

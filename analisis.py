@@ -269,3 +269,12 @@ plt.plot(absorbancia, lineal(absorbancia, m, b), label='Ajuste lineal', c='red')
 plt.xlabel('Absorbancia', fontsize=20)
 plt.ylabel('Concentración [mg/L]', fontsize=20)
 
+# %%
+path = c.ROOT + '/05-07/tratamiento-e4-e6-vidrio/'
+sr = SeñalReff(path+'reff-e4-e6-vidrio 2024-07-05 08h 49m 21s.csv')
+sz = SeñalZoom(path+'e4-e6-vidrio 2024-07-05 08h 54m 32s.csv', sr.T)
+plt.plot(sz.t, sz.I)
+# %%
+s = Señal(path+'e4-e6-vidrio 2024-07-05 08h 54m 32s.csv')
+plt.plot(s.tV, s.V)
+plt.plot(s.tI, s.I*100000)
