@@ -289,10 +289,13 @@ plt.plot(sz.t, sz.I)
 # %%
 teflones_tio2 = Tratamiento('05-07/tratamiento-e4-e6-titanio')
 teflones_tio2.plot_degradacion(label='Dos teflones TiO2')
+#teflones_tio2.plot_eficiencia(label='Dos teflones TiO2')
 
 teflones_vidr = Tratamiento('05-07/tratamiento-e4-e6-vidrio/zoom')
 teflones_vidr.plot_degradacion(label='Dos teflones')
+#teflones_vidr.plot_eficiencia(label='Dos teflones')
 
 teflon_vidr = Tratamiento('18-06/tratamiento-e4-vidrio')
 teflon_vidr.plot_degradacion(label='Un teflón')
+#teflon_vidr.plot_eficiencia(label='Un teflón')
 plt.legend()
