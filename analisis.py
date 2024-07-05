@@ -270,7 +270,7 @@ plt.xlabel('Absorbancia', fontsize=20)
 plt.ylabel('Concentración [mg/L]', fontsize=20)
 
 # %%
-path = c.ROOT + '/05-07/tratamiento-e4-e6-vidrio/'
+path = c.ROOT + '/05-07/tratamiento-e4-e6-vidrio/zoom/'
 sr = SeñalReff(path+'reff-e4-e6-vidrio 2024-07-05 08h 49m 21s.csv')
 sz = SeñalZoom(path+'e4-e6-vidrio 2024-07-05 08h 54m 32s.csv', sr.T)
 plt.plot(sz.t, sz.I)
@@ -278,3 +278,21 @@ plt.plot(sz.t, sz.I)
 s = Señal(path+'e4-e6-vidrio 2024-07-05 08h 54m 32s.csv')
 plt.plot(s.tV, s.V)
 plt.plot(s.tI, s.I*100000)
+
+# %%
+SeñalProm('05-07/tratamiento-e4-e6-vidrio')
+# %%
+path = c.ROOT + '/05-07/tratamiento-e4-e6-vidrio/'
+sr = SeñalReff(path+'reff-e4-e6-vidrio 2024-07-05 10h 11m 39s.csv')
+sz = SeñalZoom(path+'e4-e6-vidrio 2024-07-05 10h 12m 55s.csv', sr.T)
+plt.plot(sz.t, sz.I)
+# %%
+teflones_tio2 = Tratamiento('05-07/tratamiento-e4-e6-titanio')
+teflones_tio2.plot_degradacion(label='Dos teflones TiO2')
+
+teflones_vidr = Tratamiento('05-07/tratamiento-e4-e6-vidrio/zoom')
+teflones_vidr.plot_degradacion(label='Dos teflones')
+
+teflon_vidr = Tratamiento('18-06/tratamiento-e4-vidrio')
+teflon_vidr.plot_degradacion(label='Un teflón')
+plt.legend()

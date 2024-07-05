@@ -47,7 +47,8 @@ class SeñalZoom(Señal):
     def filtro(self):
         dt = 50
         # 0.005 np.max(self.I)/2
-        indices =  np.where(self.I > 0.005)[0]
+        #plt.plot(self.tI, self.I)
+        indices =  np.where(self.I/np.max(self.I) > 0.4)[0]
         i, f = indices[0] - dt, indices[-1] + dt
         t_filtro, y = np.linspace([self.tI[i], np.mean(self.I[i-dt:i])], [self.tI[f], np.mean(self.I[f:f+dt])], f-i).T
         I_filtro = self.I[i:f] - y
@@ -122,12 +123,12 @@ class Concentracion:
         return (self.A_i - self.A) / self.A_i * 100
     
     def plot_concentracion(self, label=None):
-        plt.plot(self.t, self.C, color=self.color, label=label, marker='o')
+        plt.plot(nominal_values(self.t), nominal_values(self.C), color=self.color, label=label, marker='o')
         plt.xlabel('Tiempo [min]', fontsize=20)
         plt.ylabel('Concentración [mg/L]', fontsize=20)
     
     def plot_degradacion(self, label=None):
-        plt.plot(self.t, self.DE, color=self.color, label=label, marker='o')
+        plt.plot(nominal_values(self.t), nominal_values(self.DE), color=self.color, label=label, marker='o')
         plt.xlabel('Tiempo [min]', fontsize=20)
         plt.ylabel('Porcentaje removido (%)', fontsize=20)
     
