@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #%%
 from tratamiento import Señal, SeñalReff, SeñalZoom, SeñalProm, Concentracion, Tratamiento
-import tests
+from helper import plot_all
 import constantes as c
 import matplotlib.pyplot as plt
 import os
@@ -65,32 +65,26 @@ plt.xticks(range(0, 5))
 plt.show()
 
 #%%
-teflon = SeñalProm('10-05/13.0V') 
-plt.errorbar(teflon.V_max / 1000, teflon.P_avg, teflon.P_std, teflon.V_std / 1000, c='red', label='Teflón')
+'''
+Comparamos la potencia del teflón y el acrílico ante distintos voltajes
+'''
+teflon = SeñalProm('10-05/e4/13.0V') 
+plt.errorbar(teflon.V_vpp / 1000, teflon.P_avg, teflon.P_std, teflon.V_std / 1000, c='red', label='Teflón')
+teflon = SeñalProm('10-05/e4/12.5V') 
+plt.errorbar(teflon.V_vpp / 1000, teflon.P_avg, teflon.P_std, teflon.V_std / 1000, c='red')
+teflon = SeñalProm('10-05/e4/12.0V') 
+plt.errorbar(teflon.V_vpp / 1000, teflon.P_avg, teflon.P_std, teflon.V_std / 1000, c='red')
+teflon = SeñalProm('10-05/e4/11.5V') 
+plt.errorbar(teflon.V_vpp/ 1000, teflon.P_avg, teflon.P_std, teflon.V_std / 1000, c='red')
 
-teflon = SeñalProm('10-05/12.5V') 
-plt.errorbar(teflon.V_max / 1000, teflon.P_avg, teflon.P_std, teflon.V_std / 1000, c='red')
-
-teflon = SeñalProm('10-05/12.0V') 
-plt.errorbar(teflon.V_max / 1000, teflon.P_avg, teflon.P_std, teflon.V_std / 1000, c='red')
-
-teflon = SeñalProm('10-05/11.5V') 
-plt.errorbar(teflon.V_max / 1000, teflon.P_avg, teflon.P_std, teflon.V_std / 1000, c='red')
-
-
-acrili = SeñalProm('10-05/14.5V-e2') 
-plt.errorbar(acrili.V_max / 1000, acrili.P_avg, acrili.P_std, acrili.V_std / 1000, c='blue', label='Acrílico')
-
-acrili = SeñalProm('10-05/14.0V-e2')
-plt.errorbar(acrili.V_max / 1000, acrili.P_avg, acrili.P_std, acrili.V_std / 1000, c='blue')
-
-acrili = SeñalProm('10-05/13.5V-e2')
-plt.errorbar(acrili.V_max / 1000, acrili.P_avg, acrili.P_std, acrili.V_std / 1000, c='blue')
-
-acrili = SeñalProm('10-05/13.0V-e2')
-plt.errorbar(acrili.V_max / 1000, acrili.P_avg, acrili.P_std, acrili.V_std / 1000, c='blue')
-
-
+acrili = SeñalProm('10-05/e2/14.5V') 
+plt.errorbar(acrili.V_vpp / 1000, acrili.P_avg, acrili.P_std, acrili.V_std / 1000, c='blue', label='Acrílico')
+acrili = SeñalProm('10-05/e2/14.0V')
+plt.errorbar(acrili.V_vpp / 1000, acrili.P_avg, acrili.P_std, acrili.V_std / 1000, c='blue')
+acrili = SeñalProm('10-05/e2/13.5V')
+plt.errorbar(acrili.V_vpp / 1000, acrili.P_avg, acrili.P_std, acrili.V_std / 1000, c='blue')
+acrili = SeñalProm('10-05/e2/13.0V')
+plt.errorbar(acrili.V_vpp / 1000, acrili.P_avg, acrili.P_std, acrili.V_std / 1000, c='blue')
 
 plt.xlabel('Voltaje de entrada [kV]', fontsize=20)
 plt.ylabel('Potencia [W]', fontsize=20)
@@ -98,9 +92,9 @@ plt.legend()
 
 #%%
 '''
-Ploteamos señales de referencia
+Ploteamos voltaje y corriente de referencia (se podría hacer un inplot con el zoom)
 '''
-s = SeñalReff(f'{c.ROOT}/10-05/13.0V/reff-agua-vidrio_1e_electrodoCuatro 2024-05-10 13h 12m 39s.csv')
+s = Señal(f'{c.ROOT}/10-05/e4/13.0V/reff-agua-vidrio_1e_electrodoCuatro 2024-05-10 13h 12m 39s.csv')
 
 fig, ax1 = plt.subplots()
 
@@ -114,16 +108,22 @@ ax2.set_ylabel('Corriente [mA]', fontsize=20)
 
 ax1.legend(loc='upper left')
 ax2.legend(loc='upper right')
-plt.savefig('C:/Users/USER/Downloads/VoltajeYCorrienteVsTiempo.pdf')
 
 #%%
 '''
 Y también mostramos el filtro
+(está roto por la funci{on find peaks)
 '''
-
 sr = SeñalReff(f'{c.ROOT}/25-04/sin_ventana/aire_1e 2024-04-25 09h 48m 54s.csv')
-sz = SeñalZoom(f'{c.ROOT}/25-04/con_ventana/aire_1e 2024-04-25 09h 46m 47s.csv', s.T)
-tests.filtro(sz)
+sz = SeñalZoom(f'{c.ROOT}/25-04/con_ventana/aire_1e 2024-04-25 09h 46m 47s.csv', sr.T)
+s = Señal(f'{c.ROOT}/25-04/con_ventana/aire_1e 2024-04-25 09h 46m 47s.csv')
+
+plt.plot(s.tI*1000, s.I*1000, c='blue', label='Filtrada')
+plt.plot(sz.tI*1000, sz.I*1000, c='red', label='Original')
+plt.xlabel('T [ms]', fontsize=20)
+plt.ylabel('I [mA]', fontsize=20)
+plt.legend()
+
 
 plt.xlim(0.368, 0.378)
 
@@ -198,13 +198,13 @@ plot('28-05/vidrio/15.0', 'blue')
 ''' 
 Mostramos los resultados del tratamiento de hoy
 '''
-print(Tratamiento('04-06'))
+Tratamiento('04-06/tratamiento-e4')
 
 #%%
 '''
 Vemos cómo se ven las corrientes porque una medición se tomó mal
 '''
-señales = SeñalProm('06-06').señalesZoom
+señales = SeñalProm('06-06/tratamiento-e5').señalesZoom
 for s in señales:
     plt.plot(s.t, s.I)
     
@@ -215,25 +215,19 @@ Comparamos las mediciones con vidrio, las de teflón y las de acrílico
 teflon = Tratamiento('04-06/tratamiento-e4')
 vidrio = Tratamiento('06-06/tratamiento-e5')
 acrilico = Tratamiento('11-06/tratamiento-e3')
-teflon.plot_eficiencia(label='Teflón')
-vidrio.plot_eficiencia(label='Vidrio')
-acrilico.plot_eficiencia(label='Acrílico')
-plt.legend()
+
+plot_all([teflon, vidrio, acrilico], ['Teflón', 'Vidrio', 'Acrílico'])
 
 #%%
-
+'''
+Comparamos teflón sin vidrio, con vidrio y con vidrio y dióxido de titanio
+'''
 teflon_solo = Tratamiento('04-06/tratamiento-e4')
 teflon_vidr = Tratamiento('18-06/tratamiento-e4-vidrio')
 teflon_tio2 = Tratamiento('13-06/tratamiento-e4-TiO2')
 
-teflon_solo.plot_concentracion(label='Teflón sin vidrio')
-teflon_vidr.plot_concentracion(label='Teflón con vidrio')
-teflon_tio2.plot_concentracion(label='Teflón con recubrimiento TiO$_2$')
-plt.legend()
+plot_all([teflon_solo, teflon_vidr, teflon_tio2], ['Sin vidrio', 'Con vidrio', 'Vidrio y TiO$_2$'])
 
-print(teflon_solo)
-print(teflon_vidr)
-print(teflon_tio2)
 
 #%%
 #teflon_solo = Tratamiento('04-06/tratamiento-e4')
@@ -253,6 +247,9 @@ plt.legend()
 
 
 # %%
+'''
+Hacemos un ajuste lineal de la concentración en función de la absorbancia
+'''
 concentracion, absorbancia = np.loadtxt(os.path.join(c.ROOT, '27-06/concentracion-absorbancia.txt'), skiprows=1).T
 plt.scatter(absorbancia, concentracion, label='Mediciones', c='blue')
 
@@ -264,6 +261,8 @@ perr = np.sqrt(np.diag(pcov))
 m, b = popt
 m_err, b_err = perr
 
+print(m, m_err)
+print(b, b_err)
 plt.plot(absorbancia, lineal(absorbancia, m, b), label='Ajuste lineal', c='red')
 
 plt.xlabel('Absorbancia', fontsize=20)
@@ -299,3 +298,4 @@ teflon_vidr = Tratamiento('18-06/tratamiento-e4-vidrio')
 teflon_vidr.plot_degradacion(label='Un teflón')
 #teflon_vidr.plot_eficiencia(label='Un teflón')
 plt.legend()
+# %%

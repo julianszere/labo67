@@ -1,0 +1,8 @@
+Para conectarse:
+cd /home/julian/Desktop/labo67-main/
+source myenv/bin/activate.fish
+
+---
+Nomenclatura:
+    1. Las mediciones de referencia (sin zoom) tienen que contener la palabra 'reff'
+    2. Las mediciones de referencia y zoom tienen que estar en la misma carpeta
