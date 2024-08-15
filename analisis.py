@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
 #%%
 from tratamiento import Señal, SeñalReff, SeñalZoom, SeñalProm, Concentracion, Tratamiento
-from helper import plot_all
+#from helper import plot_all
 import constantes as c
 import matplotlib.pyplot as plt
 import os
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy import integrate
 
 params = {
-    'figure.figsize': (11, 6),
+    'figure.figsize': (10, 5),
     'axes.grid': True,
     'grid.linestyle': ':',
-    'grid.linewidth': 1.5,
+    'grid.linewidth': 0.5,
     'axes.axisbelow': True,
-    'legend.fontsize': 20,
-    'xtick.labelsize': 20,
-    'ytick.labelsize': 20,
+    'legend.fontsize': 15,
+    'xtick.labelsize': 12.5,
+    'ytick.labelsize': 12.5,
+    'axes.labelsize': 17.5,
 }
 
 plt.rcParams.update(params)
@@ -213,34 +215,52 @@ for s in señales:
 Comparamos las mediciones con vidrio, las de teflón y las de acrílico
 '''
 teflon = Tratamiento('04-06/tratamiento-e4')
-vidrio = Tratamiento('06-06/tratamiento-e5')
+teflon.color = '#4277BD'
 acrilico = Tratamiento('11-06/tratamiento-e3')
+acrilico.color = '#BD4277'
+vidrio = Tratamiento('06-06/tratamiento-e5')
+vidrio.color = '#77BD42'
 
-plot_all([teflon, vidrio, acrilico], ['Teflón', 'Vidrio', 'Acrílico'])
+
+teflon.plot_concentracion('Sistema de teflón')
+acrilico.plot_concentracion('Sistema de acrílico')
+vidrio.plot_concentracion('Sistema de vidrio')
+
+plt.legend()
+plt.savefig('Tratamiento_Dielectricos.pdf', dpi=300, bbox_inches='tight')
 
 #%%
 '''
 Comparamos teflón sin vidrio, con vidrio y con vidrio y dióxido de titanio
 '''
-teflon_solo = Tratamiento('04-06/tratamiento-e4')
+#teflon_solo = Tratamiento('04-06/tratamiento-e4')
 teflon_vidr = Tratamiento('18-06/tratamiento-e4-vidrio')
 teflon_tio2 = Tratamiento('13-06/tratamiento-e4-TiO2')
+teflon_tio2_repe = Tratamiento('25-06/tratamiento-e4-titanio')
 
-plot_all([teflon_solo, teflon_vidr, teflon_tio2], ['Sin vidrio', 'Con vidrio', 'Vidrio y TiO$_2$'])
+teflon_vidr.color = '#4277BD'
+teflon_vidr.plot_concentracion('Sin $TiO_2$')
+teflon_tio2.color = '#BD4277'
+teflon_tio2.plot_concentracion('Con $TiO_2$')
+teflon_tio2_repe.color = '#77BD42'
+teflon_tio2_repe.plot_concentracion('Con $TiO_2$')
+plt.legend()
+plt.savefig('TiO2.pdf', dpi=300, bbox_inches='tight')
+#plot_all([teflon_solo, teflon_vidr, teflon_tio2], ['Sin vidrio', 'Con vidrio', 'Vidrio y TiO$_2$'])
 
 
 #%%
 #teflon_solo = Tratamiento('04-06/tratamiento-e4')
 #teflon_solo.plot2(label='Teflón sin vidrio')
 
-teflon_solo_vidrio = Tratamiento('18-06/tratamiento-e4-vidrio', V_0=180)
-teflon_solo_vidrio.plot_eficiencia(label='Teflón con vidrio')
+#teflon_solo_vidrio = Tratamiento('18-06/tratamiento-e4-vidrio', V_0=180)
+#teflon_solo_vidrio.plot_eficiencia(label='Teflón con vidrio')
 
 teflon_tio2_original = Tratamiento('13-06/tratamiento-e4-TiO2')
-teflon_tio2_original.plot_eficiencia(label='Teflón con recubrimiento TiO$_2$')
+teflon_tio2_original.plot_concentracion(label='Teflón con recubrimiento TiO$_2$')
 
 teflon_tio2_repetida = Tratamiento('25-06/tratamiento-e4-titanio')
-teflon_tio2_repetida.plot_eficiencia(label='Teflón con TiO$_2$ repetida')
+teflon_tio2_repetida.plot_concentracion(label='Teflón con TiO$_2$ repetida')
 
 plt.legend()
 
@@ -250,24 +270,31 @@ plt.legend()
 '''
 Hacemos un ajuste lineal de la concentración en función de la absorbancia
 '''
-concentracion, absorbancia = np.loadtxt(os.path.join(c.ROOT, '27-06/concentracion-absorbancia.txt'), skiprows=1).T
-plt.scatter(absorbancia, concentracion, label='Mediciones', c='blue')
+absor = np.loadtxt(os.path.join(c.ROOT, '04-06/400-720 nm, 2 nm.txt'), skiprows=1).T
+long = np.arange(400, 722, 2)
+concent_azul, absorb_azul = np.loadtxt(os.path.join(c.ROOT, '27-06/concentracion-absorbancia.txt'), skiprows=1).T
 
 def lineal(x, m, b):
-    return m*x + b
-
-popt, pcov = curve_fit(lineal, absorbancia, concentracion)
+    return m * x + b
+popt, pcov = curve_fit(lineal, concent_azul, absorb_azul, sigma=absorb_azul*c.A_ERR, absolute_sigma=True)
 perr = np.sqrt(np.diag(pcov))
 m, b = popt
 m_err, b_err = perr
 
-print(m, m_err)
-print(b, b_err)
-plt.plot(absorbancia, lineal(absorbancia, m, b), label='Ajuste lineal', c='red')
+fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True, figsize=(15, 6))
 
-plt.xlabel('Absorbancia', fontsize=20)
-plt.ylabel('Concentración [mg/L]', fontsize=20)
+ax1.axvline(662, color='red', label='$\lambda_{max}$')
+ax1.errorbar(long, absor, np.abs(absor)*c.A_ERR, label='Espectro', c='#006bb3', fmt='o')
+ax1.set_xlabel('$\lambda$ [nm]')
+ax1.legend()
+ax2.errorbar(concent_azul, absorb_azul, absorb_azul*c.A_ERR, label='Concentraciones', c='#006bb3', fmt='o')
+ax2.plot(concent_azul, lineal(concent_azul, m, b), label='Ajuste lineal', c='red')
+ax2.set_xlabel('$C$ [mg/L]')
+ax2.legend()
 
+ax1.set_ylabel('$A$', color='black')
+plt.subplots_adjust(wspace=0.05)
+plt.savefig('Absorbancia.pdf', dpi=300, bbox_inches='tight')
 # %%
 path = c.ROOT + '/05-07/tratamiento-e4-e6-vidrio/zoom/'
 sr = SeñalReff(path+'reff-e4-e6-vidrio 2024-07-05 08h 49m 21s.csv')
@@ -284,7 +311,18 @@ SeñalProm('05-07/tratamiento-e4-e6-vidrio')
 path = c.ROOT + '/05-07/tratamiento-e4-e6-vidrio/'
 sr = SeñalReff(path+'reff-e4-e6-vidrio 2024-07-05 10h 11m 39s.csv')
 sz = SeñalZoom(path+'e4-e6-vidrio 2024-07-05 10h 12m 55s.csv', sr.T)
-plt.plot(sz.t, sz.I)
+s = Señal(path+'e4-e6-vidrio 2024-07-05 10h 12m 55s.csv')
+#plt.plot(sr.tI*1000, sr.I*1000, color='red', label='Señal sin filtrar')
+plt.plot(s.tI*1000, s.I*1000, color='red', label='Señal sin filtrar')
+plt.plot(sz.t*1000, sz.I*1000, color='blue', label='Señal filtrada')
+
+print(sz.P_avg)
+print(integrate.simpson(s.I * s.V, x=s.tI) / sr.T)
+
+plt.xlabel('$t$ [ms]')
+plt.ylabel('$I$ [mA]')
+plt.legend()
+plt.savefig('Filtro_3.pdf', dpi=300, bbox_inches='tight')
 # %%
 teflones_tio2 = Tratamiento('05-07/tratamiento-e4-e6-titanio')
 teflones_tio2.plot_degradacion(label='Dos teflones TiO2')

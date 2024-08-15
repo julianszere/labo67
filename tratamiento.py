@@ -120,8 +120,8 @@ class Concentracion:
     def plot_concentracion(self, label=None):
         plt.plot(unp.nominal_values(self.t), unp.nominal_values(self.C), color=self.color, label=label, marker='o')
         plt.errorbar(unp.nominal_values(self.t), unp.nominal_values(self.C), unp.std_devs(self.C), unp.std_devs(self.t), color=self.color)
-        plt.xlabel('Tiempo [min]', fontsize=20)
-        plt.ylabel('Concentración [mg/L]', fontsize=20)
+        plt.xlabel('$t$ [min]')
+        plt.ylabel('$C$ [mg/L]')
     
     def plot_degradacion(self, label=None):
         plt.plot(unp.nominal_values(self.t), unp.nominal_values(self.DE), color=self.color, label=label, marker='o')

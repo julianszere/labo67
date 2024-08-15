@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#%%
 """
 Created on Tue Apr 30 17:06:12 2024
 
@@ -8,6 +9,7 @@ Created on Tue Apr 30 17:06:12 2024
 import numpy as np
 import matplotlib.pyplot as plt
 from sympy import symbols, diff, sqrt
+import constantes as c
 params = {
     'figure.figsize': (11, 6),
     'axes.grid': True,
@@ -20,7 +22,6 @@ params = {
 }
 
 plt.rcParams.update(params)
-ruta = 'C:/Users/USER/Desktop/labo_6_y_7/Mediciones/'
 
 #%%
 
@@ -59,7 +60,7 @@ def eval_delta_C(cantAguas, cantAguaMetileno):
 
 
 #%%
-long, A1, A2, A3, A4, A5 = np.loadtxt(ruta + '/30-04/azul.txt', skiprows=1).T
+long, A1, A2, A3, A4, A5 = np.loadtxt(c.ROOT + '/30-04/azul.txt', skiprows=1).T
 
 plt.plot(long, A3, label='Frasco con agua', c='green')
 plt.plot(long, A5, label='Frasco sin agua')
@@ -73,7 +74,7 @@ longMax2 = long[A2 == np.max(A2[200:-100])]
 plt.axvline(longMax2, c='red')
 print((longMax1 + longMax2) / 2)
 
-long, A = np.loadtxt(ruta + '/07-05/espectroAbsorbancia.txt', skiprows=1).T
+long, A = np.loadtxt(c.ROOT + '/07-05/espectroAbsorbancia.txt', skiprows=1).T
 
 longMax = long[A == np.max(A)][0] 
 plt.axvline(longMax, label=f'$\lambda_{{max}} = {longMax}$')
@@ -88,7 +89,7 @@ plt.ylim(0,1)
 
 #%%
 
-long, A = np.loadtxt(ruta + '/07-05/espectroAbsorbancia.txt', skiprows=1).T
+long, A = np.loadtxt(c.ROOT + '/07-05/espectroAbsorbancia.txt', skiprows=1).T
 
 longMax = long[A == np.max(A)][0] 
 plt.axvline(longMax, label=f'$\lambda_{{max}} = {longMax}$')
@@ -103,7 +104,7 @@ plt.legend()
 '''
 Tenemos una concentración de 10 mg / L de azul de metileno y la vamos diluyendo de a 10 ml
 '''
-agua, absorb = np.loadtxt(ruta + '/07-05/concentracionAbsorbancia.txt', skiprows=1).T
+agua, absorb = np.loadtxt(c.ROOT + '/07-05/concentracionAbsorbancia.txt', skiprows=1).T
 concent = calcConcent(agua, 20)
 
 plt.scatter(concent, absorb)
@@ -115,12 +116,12 @@ plt.ylabel('Absorbancia', fontsize=20)
 Volvemos a medir concentración de 10 mg / L
 '''
 
-cantAgua, absorb = np.loadtxt(ruta + '/10-05/concentracionAbsorbancia2.txt', skiprows=1).T
+cantAgua, absorb = np.loadtxt(c.ROOT + '/10-05/concentracionAbsorbancia2.txt', skiprows=1).T
 concent = calcConcent(cantAgua, 10)
 
 plt.errorbar(concent, absorb, absorb*3/100, eval_delta_C(cantAgua, 20)*1e6, marker='o', label='Medición 10-05')
 
-cantAgua, absorb = np.loadtxt(ruta + '/07-05/concentracionAbsorbancia.txt', skiprows=1).T
+cantAgua, absorb = np.loadtxt(c.ROOT + '/07-05/concentracionAbsorbancia.txt', skiprows=1).T
 concent = calcConcent(cantAgua)
 plt.errorbar(concent, absorb, absorb*3/100, eval_delta_C(cantAgua, 10)*1e6, marker='o', label='Medición 07-05')
 
@@ -134,4 +135,7 @@ plt.ylabel('Absorbancia', fontsize=20)
 Medimos concentración en función del tiempo con el reactor a dos electrodos
 '''
 
-tiempo, absorb = np.loadtxt(ruta + '/21-05/concentracionAbsorbancia2.txt', skiprows=1).T
+tiempo, absorb = np.loadtxt(c.ROOT + '/21-05/concentracionAbsorbancia2.txt', skiprows=1).T
+plt.plot(tiempo, absorb)
+
+# %%
