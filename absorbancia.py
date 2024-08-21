@@ -9,7 +9,7 @@ Created on Tue Apr 30 17:06:12 2024
 import numpy as np
 import matplotlib.pyplot as plt
 from sympy import symbols, diff, sqrt
-import constantes as c
+import tratamiento.constantes as c
 params = {
     'figure.figsize': (11, 6),
     'axes.grid': True,
