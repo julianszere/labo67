@@ -218,6 +218,10 @@ teflon.plot_concentration('Teflón')
 acrilico.plot_concentration('Acrílico')
 vidrio.plot_concentration('Vidrio')
 
+print(teflon)
+print(acrilico)
+print(vidrio)
+
 plt.legend()
 plt.savefig('Tratamiento_Dielectricos.pdf', dpi=300, bbox_inches='tight')
 
@@ -240,7 +244,8 @@ plt.legend()
 plt.savefig('TiO2.pdf', dpi=300, bbox_inches='tight')
 #plot_all([teflon_solo, teflon_vidr, teflon_tio2], ['Sin vidrio', 'Con vidrio', 'Vidrio y TiO$_2$'])
 
-
+print(teflon_vidr)
+print(teflon_tio2)
 #%%
 teflon_tio2_original = WaterTreatment('13-06/tratamiento-e4-TiO2')
 teflon_tio2_original.plot_concentration(label='Teflón con recubrimiento TiO$_2$')

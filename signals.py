@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
 from scipy import integrate
+from scipy.signal import find_peaks
 import glob
 import os
 import uncertainties.unumpy as unp
@@ -38,16 +39,19 @@ class SignalReff(SignalHandler):
 class SignalZoom(SignalHandler):
     def __init__(self, file_zoom, T):
         super().__init__(file_zoom)
-        self.t, self.I, self.V = self.filter()
+        self.t, self.I, self.V = self.filter(file_zoom)
         self.P_avg = self.get_power(T)
         self.I_avg = self.get_current()
 
-    def filter(self):
+    def filter(self, file_zoom):
         dt = 50
         # 0.005 np.max(self.I)/2
         #indices =  np.where(self.I > 0.005)[0]
-        indices =  np.where(self.I/np.max(self.I) > 0.4)[0]
+        #indices =  np.where(self.I/np.max(self.I) > 0.4)[0]
+        indices, _ = find_peaks((self.I/np.max(self.I))**2, height=0.15)
         i, f = indices[0] - dt, indices[-1] + dt
+        if i < 0 or f > len(self.I):
+            print(file_zoom)
         t_filter, y = np.linspace([self.tI[i], np.mean(self.I[i-dt:i])], [self.tI[f], np.mean(self.I[f:f+dt])], f-i).T
         I_filter = self.I[i:f] - y
         V_filter = self.V[i:f]
