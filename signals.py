@@ -55,7 +55,7 @@ class SignalZoom(SignalHandler):
         t_filter, y = np.linspace([self.tI[i], np.mean(self.I[i-dt:i])], [self.tI[f], np.mean(self.I[f:f+dt])], f-i).T
         I_filter = self.I[i:f] - y
         V_filter = self.V[i:f]
-        return t_filter, I_filter, V_filter
+        return t_filter, I_filter/10, V_filter
     
     def get_power(self, T):
         return integrate.simpson(self.I * self.V, x=self.t) / T

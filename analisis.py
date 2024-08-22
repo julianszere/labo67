@@ -362,4 +362,29 @@ teflon_vidr = WaterTreatment('18-06/tratamiento-e4-vidrio')
 teflon_vidr.plot_degradation(label='Un teflón')
 #teflon_vidr.plot_eficiencia(label='Un teflón')
 plt.legend()
+
+print(teflones_tio2)
+print(teflones_vidr)
 # %%
+print(Signals('22-08/e4'))
+print(Signals('05-07/tratamiento-e4-e6-titanio'))
+print(Signals('22-08/e4-e6'))
+print(Signals('22-08/e4-e6-zoom'))
+
+# %%
+
+path = '05-07/tratamiento-e4-e6-vidrio/zoom/e4-e6-vidrio 2024-07-05 09h 34m 28s.csv'
+sh = SignalHandler(path)
+sz = SignalZoom(path,1)
+
+plt.plot(sh.tI, sh.I/10, label='Original', color='red')
+plt.plot(sz.t, sz.I/10, label='Filtro', color='blue')
+
+path = '22-08/e4-e6/e4-e6 2024-08-22 11h 08m 31s.csv'
+sh = SignalHandler(path)
+sz = SignalZoom(path,1)
+
+plt.plot(sh.tI, sh.I, color='green')
+plt.plot(sz.t, sz.I, color='black')
+
+plt.legend()
