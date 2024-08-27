@@ -162,7 +162,8 @@ print(s.P_avg)
 #%%
 def plot(folder, color, label=None):
     s = Signals(folder)
-    plt.errorbar(unp.nominal_values(s.V_vpp) / 1000, unp.nominal_values(s.P_avg), unp.std_devs(s.P_avg), c=color, label=label)
+    plt.errorbar(unp.nominal_values(s.V_vpp) / 1000, unp.nominal_values(s.P_avg), unp.std_devs(s.P_avg), c=color, label=label, zorder=1)
+    plt.scatter(unp.nominal_values(s.V_vpp) / 1000, unp.nominal_values(s.P_avg), marker='s', c='black', zorder=2)
     plt.xlabel('$V$ [kV]')
     plt.ylabel('$P$ [W]')
 
@@ -293,61 +294,87 @@ plt.plot(s.tV, s.V)
 plt.plot(s.tI, s.I*100000)
 
 # %%
-path = c.ROOT + '/05-04/'
-#sr = SeñalReff(path+'reff-tratamiento-e4 2024-06-04 17h 49m 35s.csv')
-#sz = SeñalZoom(path+'tratamiento-e3 2024-06-11 17h 35m 52s.csv', sr.T)
-s = SignalHandler(path+'aire_solo_1e 2024-04-05 09h 24m 18s.csv')
-#Tratamiento('25-06/tratamiento-e4-titanio')
+path = '11-06/tratamiento-e3/'
+sr = SignalReff(path+'reff-tratamiento-e3 2024-06-11 17h 23m 58s.csv')
+sz = SignalZoom(path+'tratamiento-e3 2024-06-11 17h 36m 22s.csv', sr.T)
+s = SignalHandler(path+'tratamiento-e3 2024-06-11 17h 36m 22s.csv')
 
 fig, ax1 = plt.subplots()
-plt.plot(sr.tV * 1000, sr.V/1000-7)
 
-# lns1 = ax1.plot(sr.tI * 1000, sr.I * 1000, color = '#4277BD', label='Corriente')
-# ax1.set_xlabel('$t$ [ms]')
-# ax1.set_ylabel('$I$ [mA]')
-# ax1.tick_params(axis='y', labelcolor='#4277BD')
+lns1 = ax1.plot(sz.t * 1000000, sz.I * 1000, color='#77BD42', label='$I_{str}$')
+lns2 = ax1.plot(s.tI * 1000000, s.I * 1000, color = '#4277BD', label='$I$')
+ax1.set_xlabel('$t$ [$\mu$s]')
+ax1.set_ylabel('$I$ [mA]')
+ax1.tick_params(axis='y', labelcolor='#4277BD')
 
-# ax2 = ax1.twinx()
-# lns2 = ax2.plot(sr.tV * 1000, sr.V / 1000, color='#BD4277', label='Voltaje')
-# ax2.set_ylabel('$V$ [kV]')
-# ax2.tick_params(axis='y', labelcolor='#BD4277')
-# plt.savefig('Filtro_1.pdf', dpi=300, bbox_inches='tight')
+ax2 = ax1.twinx()
+lns3 = ax2.plot(s.tV * 1000000, s.V / 1000, color='#BD4277', label='$V$')
+ax2.set_ylabel('$V$ [kV]')
+ax2.tick_params(axis='y', labelcolor='#BD4277')
 
-# lns1 = ax1.plot(s.tI * 1000, s.I * 1000, color = '#4277BD', label='Corriente')
-# ax1.set_xlabel('$t$ [ms]')
-# ax1.set_ylabel('$I$ [mA]')
-# ax1.tick_params(axis='y', labelcolor='#4277BD')
+leg = lns1 + lns2 + lns3
+labs = [l.get_label() for l in leg]
+ax1.legend(leg, labs, loc='upper left')
+all_axes = fig.get_axes()
+for axis in all_axes:
+    legend = axis.get_legend()
+    if legend is not None:
+        legend.remove()
+        all_axes[-1].add_artist(legend)
 
-# ax2 = ax1.twinx()
-# lns2 = ax2.plot(s.tV * 1000, s.V / 1000, color='#BD4277', label='Voltaje')
-# ax2.set_ylabel('$V$ [kV]')
-# ax2.tick_params(axis='y', labelcolor='#BD4277')
+ax1.set_xlim(min(sz.t)*1000000,max(sz.t)*1000000)
+plt.savefig('Señal_Típicas.pdf', dpi=300, bbox_inches='tight')
 
-#plt.savefig('Filtro_2.pdf', dpi=300, bbox_inches='tight')
+# %%
+from scipy.signal import find_peaks
+
+path = '11-06/tratamiento-e3/'
+sr = SignalReff(path+'reff-tratamiento-e3 2024-06-11 17h 23m 58s.csv')
+sz = SignalZoom(path+'tratamiento-e3 2024-06-11 17h 36m 22s.csv', sr.T)
+s = SignalHandler(path+'tratamiento-e3 2024-06-11 17h 36m 22s.csv')
+
+fig, (ax1, ax3) = plt.subplots(2, 1, figsize=(14, 7))
+
+lns1 = ax1.plot(sr.tI * 1000000, sr.I * 1000, color='#77BD42')
+#lns2 = ax1.plot(sz.t * 1000000, sz.I * 1000, color='#4277BD')
+
+ax2 = ax1.twinx()
+def sin(x, A, T, p, B): 
+    return A*np.sin(2*np.pi/T*x + p) + B
+initialGuess = [7500, 1/8000, 0, 10000]
+popt, pcov = curve_fit(sin, sr.tV, sr.V, p0=initialGuess)
+perr = np.sqrt(np.diag(pcov))
+A, T, p, B = popt
+A_err, T_err, p_err, B_err = perr
+ax2.plot(sr.tV * 1000000, sin(sr.tV, A, T, p, B) / 1000, c='black', label='Ajuste')
+
+lns3 = ax2.plot(sr.tV * 1000000, sr.V / 1000, color='#BD4277', label='$V$')
+ax2.set_ylabel('$V$ [kV]')
+ax2.legend(loc='upper left')
+
+dt = 50
+indices, _ = find_peaks((s.I/np.max(s.I))**2, height=0.15)
+i, f = indices[0] - dt, indices[-1] + dt
+t_filter, y = np.linspace([s.tI[i], np.mean(s.I[i-dt:i])], [s.tI[f], np.mean(s.I[f:f+dt])], f-i).T
+ax3.plot(t_filter * 1000000, y * 1000, c='grey', label='Interpolación')       
 
 
-# lns1 = ax1.plot(sz.t * 1000, sz.I * 1000, color='#77BD42', label='Corriente de streamers')
-# lns2 = ax1.plot(s.tI * 1000, s.I * 1000, color = '#4277BD', label='Corriente')
-# ax1.set_xlabel('$t$ [ms]')
-# ax1.set_ylabel('$I$ [mA]')
-# ax1.tick_params(axis='y', labelcolor='#4277BD')
+lns4 = ax3.plot(sz.t * 1000000, sz.I * 1000, color='#4277BD', label='$I_{str}$')
+lns5 = ax3.plot(s.tI * 1000000, s.I * 1000, color='#77BD42', label='$I$')
+ax3.set_xlabel('$t$ [$\mu$s]')
 
-# ax2 = ax1.twinx()
-# lns3 = ax2.plot(s.tV * 1000, s.V / 1000, color='#BD4277', label='Voltaje')
-# ax2.set_ylabel('$V$ [kV]')
-# ax2.tick_params(axis='y', labelcolor='#BD4277')
 
-# leg = lns1 + lns2 + lns3
-# labs = [l.get_label() for l in leg]
-# ax1.legend(leg, labs, loc='lower right')
-# all_axes = fig.get_axes()
-# for axis in all_axes:
-#     legend = axis.get_legend()
-#     if legend is not None:
-#         legend.remove()
-#         all_axes[-1].add_artist(legend)
+ax3.legend(loc='upper left')
 
-# plt.savefig('Señal_Típicas.pdf', dpi=300, bbox_inches='tight')
+ax1.set_xlim(min(sr.tV) * 1000000, max(sr.tV) * 1000000)
+ax3.set_xlim(min(sz.t) * 1000000, max(sz.t) * 1000000)
+
+fig.text(0.07, 0.5, '$I$ [mA]', va='center', rotation='vertical', fontsize=17.5)
+
+#plt.tight_layout()
+plt.savefig('Señal_Típicas.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 # %%
 teflones_tio2 = WaterTreatment('05-07/tratamiento-e4-e6-titanio')
@@ -365,6 +392,10 @@ plt.legend()
 
 print(teflones_tio2)
 print(teflones_vidr)
+# %%
+
+plt.plot(teflones_vidr.t, teflones_vidr.V_)
+
 # %%
 print(Signals('22-08/e4'))
 print(Signals('05-07/tratamiento-e4-e6-titanio'))

@@ -1,0 +1,471 @@
+%Estructura:
+\NC{\Mo}{\DeclareMathOperator}
+\NC{\Ms}{\DeclareMathSymbol}
+\NC{\Op}{\operatorname}
+\NC{\Mc}{\ensuremath}
+%Gráficos Matemáticos:
+\pgfplotsset{compat=1.18, width=10 cm}
+%Aligns Partidos:
+\allowdisplaybreaks[4]
+
+%Paréntesis:
+\NC{\lp}{\!\left(}				\NC{\rp}{\right)\!}
+%Corchetes:
+\NC{\lb}{\cuatrol\left[}		\NC{\rb}{\right]\!}
+%Llaves:
+\NC{\lla}{\!\left\{}				\NC{\rla}{\right\}\!}
+%Módulo:
+\NC{\lv}{\!\left|}				\NC{\rv}{\right|\!}
+%Vector:
+\NC{\la}{\!\left\langle}		\NC{\ra}{\right\rangle\!}
+%Techo:
+\NC{\lc}{\!\left\lceil}			\NC{\rc}{\right\rceil\!}
+%Piso:
+\NC{\lfl}{\!\left\lfloor}		\NC{\rfl}{\right\rfloor\!}
+%Punto:
+\NC{\ldot}{\left.}				\NC{\rdot}{\right.}
+
+%Espaciado:
+\NC{\uno}{\:\!}						\NC{\unol}{\;\!\!}
+\NC{\dos}{\;\!}						\NC{\dosl}{\:\!\!}
+\NC{\tres}{\,}							\NC{\tresl}{\!}
+\NC{\cuatro}{\:}					\NC{\cuatrol}{\;\!\!\!}
+\NC{\cinco}{\;}						\NC{\cincol}{\:\!\!\!}
+\NC{\seis}{\,\,}						\NC{\seisl}{\!\!}
+\NC{\siete}{\:\,}						\NC{\sietel}{\;\!\!\!\!}
+\NC{\ocho}{\:\:}					\NC{\ochol}{\:\!\!\!\!}
+\NC{\nueve}{\;\:}					\NC{\nuevel}{\!\!\!}
+\NC{\diez}{\;\;}						\NC{\diezl}{\;\!\!\!\!\!}
+\NC{\veinte}{\;\;\;\;}			\NC{\veintel}{\diezl\diezl}
+\NC{\treinta}{\;\;\;\;\;\;}		\NC{\treintal}{\diezl\veintel}
+
+\NC{\quadl}{\diezl\ochol}
+%Vector:
+\RC{\Vec}{\overrightarrow}
+\NC{\Veco}[1]{\Vec{{#1}^{\!\!\SB{0.5}{(o)}}}} %Vector Medido Desde Un Centro De Momentos (o).
+\NC{\Vecm}[1]{\Vec{{#1}^{\!\!\SB{0.5}{(\tx{cm})}}}} %Vector Medido Desde El Centro De Masas (cm).
+
+%Operaciones Entre Vectores:
+\NC{\por}{\cdot} %Producto Interno.
+\NC{\PI}[2]{#1 \por #2} %Producto Interno.
+\NC{\Por}{\times} %Producto Vectorial.
+\NC{\PV}[6]{\la{#1,#2,#3}\ra \Por \la{#4,#5,#6}\ra} %Producto Vectorial.
+\NC{\PVr}[6]{\la{#2 #6 - #3 #5,#3 #4 - #1 #6,#1 #5 - #2 #4}\ra} %Producto Vectorial Resuelto.
+\NC{\Tor}{\otimes} %Producto Tensorial.
+\NC{\compnt}[2]{\Op{comp}_{#1} \lp #2 \rp} %Componente.
+\NC{\proy}[2]{\Op{proy}_{#1} \lp #2 \rp} %Proyección Ortogonal.
+
+%Operadores Vectoriales:
+\NC{\gr}[2][]{\nabla_{#1} {#2}} %Gradiente.
+\RC{\div}[1]{\nabla \por \ff{#1}} %Divergencia.
+\NC{\rot}[1]{\nabla \Por \ff{#1}} %Rotacional.
+\NC{\Rotr}[3]{\la{\pd{{#3}_{\xyz}}{y} - \pd{{#2}_{\xyz}}{z},\pd{{#1}_{\xyz}}{z} - \pd{{#3}_{\xyz}}{x},\pd{{#2}_{\xyz}}{x} - \pd{{#1}_{\xyz}}{y}}\ra} %Rotacional Resuelto.
+\NC{\lap}[1]{\nabla^2 {#1}} %Laplaciano.
+\NC{\lapv}[1]{\nabla^2 \ff{#1}} %Laplaciano Vectorial.
+\NC{\blap}[1]{\nabla^4 {#1}} %Bilaplaciano.
+\NC{\dal}[1]{\Box {#1}} %D'Alambertiano.
+
+%Vector:
+\DeclareSymbolFont{mathbf}{OT1}{\familydefault}{\bfdefault}{n}
+\DeclareSymbolFontAlphabet{\ff}{mathbf}
+\Ms{\boldimath}{\mathord}{mathbf}{"10}
+\Ms{\boldjmath}{\mathord}{mathbf}{"11}
+\ExplSyntaxOn
+\NDC{\vc}{m} {\token_if_cs:NTF #1 {\bm{#1}} {\str_case:nnF{#1} {{i}{\ff{\boldimath}} {j}{\ff{\boldjmath}}} {\ff{#1}}}}
+\ExplSyntaxOff
+%Vector Medido Desde Un Centro De Momentos (o):
+\DeclareSymbolFont{mathbf}{OT1}{\familydefault}{\bfdefault}{n}
+\DeclareSymbolFontAlphabet{\ff}{mathbf}
+\Ms{\boldimath}{\mathord}{mathbf}{"10}
+\Ms{\boldjmath}{\mathord}{mathbf}{"11}
+\ExplSyntaxOn
+\NDC{\vco}{m} {\token_if_cs:NTF #1 {{\bm{#1}}^{\SB{0.5}{(o)}}} {\str_case:nnF{#1} {{i}{\ff{\boldimath}} {j}{\ff{\boldjmath}}} {{\ff{#1}}^{\SB{0.5}{(o)}}}}}
+\ExplSyntaxOff
+%Vector Medido Desde El Centro De Masas (cm):
+\DeclareSymbolFont{mathbf}{OT1}{\familydefault}{\bfdefault}{n}
+\DeclareSymbolFontAlphabet{\ff}{mathbf}
+\Ms{\boldimath}{\mathord}{mathbf}{"10}
+\Ms{\boldjmath}{\mathord}{mathbf}{"11}
+\ExplSyntaxOn
+\NDC{\vcm}{m} {\token_if_cs:NTF #1 {{\bm{#1}}^{\SB{0.5}{(\tx{cm})}}} {\str_case:nnF{#1} {{i}{\ff{\boldimath}} {j}{\ff{\boldjmath}}} {{\ff{#1}}^{\SB{0.5}{(\tx{cm})}}}}}
+\ExplSyntaxOff
+
+%Versor:
+\DeclareSymbolFont{mathbf}{OT1}{\familydefault}{\bfdefault}{n}
+\DeclareSymbolFontAlphabet{\ff}{mathbf}
+\Ms{\boldimath}{\mathord}{mathbf}{"10}
+\Ms{\boldjmath}{\mathord}{mathbf}{"11}
+\ExplSyntaxOn
+\NDC{\ver}{m} {\token_if_cs:NTF #1 {\bm{\hat{#1}}} {\str_case:nnF{#1} {{i}{\ff{\hat{\boldimath}}} {j}{\ff{\hat{\boldjmath}}}} {\ff{\hat{#1}}}}}
+\ExplSyntaxOff
+
+%Tensor:
+\NCX{\ten}[3][1=,3=]{\cal{#2}_{#1}^{#3}}
+\setlength\defaultaddspace{0.75ex}
+
+%Variables De Función:
+\NC{\x}{(x)}
+\NC{\y}{(y)}
+\NC{\z}{(z)}
+\NC{\xy}{(x,y)} %Plano xy.
+\NC{\xz}{(x,z)} %Plano xz.
+\NC{\yz}{(y,z)} %Plano yz.
+\NC{\xyz}{(x,y,z)} %Coordenadas Cartesianas.
+\NC{\rf}{(\ro,\phi)} %Coordenadas Polares.
+\NC{\rfz}{(\ro,\phi,z)} %Coordenadas Cilíndricas.
+\NC{\rtf}{(r,\tita,\phi)} %Coordenadas Esféricas.
+\NCX{\prs}[3][1=1,3=n]{({#2}_{#1},\pors,{#2}_{#3})} %Función De n-Variables.
+%Coordenadas Dependientes Del Tiempo:
+\NC{\xt}{(x,t)}
+\NC{\xyt}{(x,y,t)}
+\NC{\xyzt}{(x,y,z,t)} %Coordenadas Cartesianas.
+\NC{\rft}{(\ro,\phi,t)} %Coordenadas Polares.
+\NC{\rfzt}{(\ro,\phi,z,t)} %Coordenadas Cilíndricas.
+\NC{\rtft}{(r,\tita,\phi,t)} %Coordenadas Esféricas.
+
+
+%Operaciones Entre Funciones:
+\NC{\comp}[2]{#1 \circ #2} %Composición.
+\NC{\conv}[2]{#1 * #2} %Convolución.
+\NC{\rectan}[2]{\tx{R}_{\tx{T}}\lb{{#1}_{\,\lp{#2}\rp}}\rb} %Recta Tangente.
+\NC{\platan}[2]{\Pi_{\tx{T}}\lb{{#1}_{\,\lp{#2}\rp}}\rb} %Plano Tangente.
+
+
+%Análisis De Función:
+\NC{\dom}[1]{\bb{D}_{\,\lp{#1}\rp}} %Dominio.
+\NC{\cod}[1]{\bb{C}_{\,\lp{#1}\rp}} %Codominio.
+\NC{\img}[1]{\bb{I}_{\,\lp{#1}\rp}} %Imagen.
+
+
+%Definición De Una Función:
+\NC{\Def}[5]{\begin{array}{llccl} & #1 : & #2 & \To & #3 \\ & & #4 & \to & \boxed{#5} \end{array}}
+%Definición De Una Función Con Parámetro:
+\NC{\Defc}[6]{\begin{array}{llccl} & #1 : & #2 & \To & #3 \\ & & #4 & \to & \boxed{#5} \tx{ , con } \boxed{#6} \end{array}}
+%Función Escalar:
+\NC{\Fs}[2]{#1 : \bb{D} \inc \bb{R}^{#2} \to \bb{R}}
+%Función Vectorial:
+\NC{\Fv}[3]{#1 : \bb{D} \inc \bb{R}^{#2} \to \bb{R}^{#3}}
+%Campo Vectorial:
+\NC{\Cv}[2]{\ff{#1} : \bb{D} \inc \bb{R}^{#2} \to \bb{R}^{#2}} %Funciones Escalares & Vectoriales.
+%Funciones Definidas A Trozos (Casos):
+\NC{\Ftt}[4]{\lla \begin{array}{SlSrSr} \diezl $#1$ & \veinte con \cinco & $#3$ \\ \diezl $#2$ & \veinte con \cinco & $#4$ \end{array}\rdot \!\!\! }
+\NC{\Fttt}[6]{\lla \begin{array}{SlSrSr} \diezl $#1$ & \veinte con \cinco & $#4$ \\ \diezl $#2$ & \veinte con \cinco & $#5$ \\ \diezl $#3$ & \veinte con \cinco & $#6$ \end{array}\rdot \!\!\! }
+\NC{\Ftttt}[8]{\lla \begin{array}{SlSrSr} \diezl $#1$ & \veinte con \cinco & $#5$ \\ \diezl $#2$ & \veinte con \cinco & $#6$ \\ \diezl $#3$ & \veinte con \cinco & $#7$ \\ \diezl $#4$ & \veinte con \cinco & $#8$ \end{array}\rdot \!\!\! }
+%Funciones Partidas (Llave):
+\NC{\Fp}[1]{\lla \begin{array}{Sl} \diezl $#1$ \end{array}\rdot \!\!\! }
+\NC{\Fpp}[2]{\lla \begin{array}{Sl} \diezl $#1$ \\ \diezl $#2$ \end{array}\rdot \!\!\! }
+\NC{\Fppp}[3]{\lla \begin{array}{Sl} \diezl $#1$ \\ \diezl $#2$ \\ \diezl $#3$ \end{array}\rdot \!\!\! }
+\NC{\Fpppp}[4]{\lla \begin{array}{Sl} \diezl $#1$ \\ \diezl $#2$ \\ \diezl $#3$ \\ \diezl $#4$ \end{array}\rdot \!\!\! }
+\NC{\Fppppp}[5]{\lla \begin{array}{Sl} \diezl $#1$ \\ \diezl $#2$ \\ \diezl $#3$ \\ \diezl $#4$ \\ \diezl $#5$ \end{array}\rdot \!\!\! }
+\NC{\Fpppppp}[6]{\lla \begin{array}{Sl} \diezl $#1$ \\ \diezl $#2$ \\ \diezl $#3$ \\ \diezl $#4$ \\ \diezl $#5$ \\ \diezl $#6$ \end{array}\rdot \!\!\! }
+\NC{\Fpn}[4]{\lla\begin{array}{Sl} \diezl $#1$ \\ \diezl $#2$ \\ \diezl $#3$ \\ \quad \porv \\ \diezl $#4$ \end{array}\rdot \!\!\! } %Caso n-ésimo.
+\NC{\Fppn}[5]{\lla\begin{array}{Sl} \diezl $#1$ \\ \diezl $#2$ \\ \diezl $#3$ \\ \diezl $#4$ \\ \quad \porv \\ \diezl $#5$ \end{array}\rdot \!\!\! } %Caso n-ésimo.
+
+
+%Polinomios:
+\Mo{\grad}{grad} %Grado.
+%Polinomios De Hermite:
+\NC{\Polh}[2]{H_{#1\tres\lp{#2}\rp}}
+\NC{\PolH}[2]{H_{#1}\dosl\lp{\SB{0.7}{$#2$}}\rp}
+%Polinomios De Legendre:
+\NC{\Polle}[3][]{P_{#2\tres\lp{#3}\rp}^{#1}}
+\NC{\Pollet}[2][]{P_{#2(\cos\tita)}^{#1}} %Polinomios De Legendre Trigonométricos.
+%Polinomios De Laguerre:
+\NC{\Polla}[3][]{L_{#2\tres\lp{#3}\rp}^{#1}}
+\NC{\PolLa}[3][]{L_{#2}^{#1}\dosl\lp{\SB{0.7}{$#3$}}\rp}
+
+
+%Funciones Trigonométricas:
+\Mo{\sen}{sen} %Seno.
+\Mo{\asen}{arcsen} %Arcoseno.
+\Mo{\acos}{arccos} %Arcocoseno.
+\Mo{\atan}{arctan} %Arcotangente.
+\Mo{\acsc}{arccsc} %Arcocosecante.
+\Mo{\asec}{arcsec} %Arcosecante.
+\Mo{\acot}{arccot} %Arcocotangente.
+%Funciones Trigonométricas Hiperbólicas:
+\Mo{\senh}{senh} %Seno Hiperbólico.
+\Mo{\csch}{csch} %Cosecante Hiperbólica.
+\Mo{\sech}{sech} %Secante Hiperbólica.
+\Mo{\asenh}{arcsenh} %Arcoseno Hiperbólico.
+\Mo{\acosh}{arccosh} %Arcocoseno Hiperbólico.
+\Mo{\atanh}{arctanh} %Arcotangente Hiperbólica.
+\Mo{\acsch}{arccsch} %Arcocosecante Hiperbólica.
+\Mo{\asech}{arcsech} %Arcosecante Hiperbólica.
+\Mo{\acoth}{arccoth} %Arcocotangente Hiperbólica.
+
+
+%Funciones Partidas:
+\NC{\crc}[2]{\ji_{#1\,\lp{#2}\rp}} %Característica.
+\Mo{\sg}{sg} %Signo.
+\NC{\heav}[1]{H_{\,\lp{#1}\rp}} %Heaviside.
+\Mo{\rect}{rect} %Rectángulo.
+\Mo{\abs}{abs} %Valor Absoluto.
+\Mo{\ramp}{ramp} %Rampa.
+\Mo{\techo}{techo} %Techo.
+\Mo{\piso}{piso} %Piso.
+
+
+%Funciones Antiderivadas De Funciones Elementales:
+\Mo{\Ei}{Ei}
+\Mo{\li}{li}
+\Mo{\Li}{Li}
+\Mo{\si}{si}
+\Mo{\Si}{Si}
+\Mo{\Ci}{Ci}
+\Mo{\Shi}{Shi}
+\Mo{\Chi}{Chi}
+\Mo{\erf}{erf}
+
+
+%Funciones Especiales:
+\Mo{\senc}{senc} %Seno Cardinal.
+\NC{\ArmS}[3][]{Y_{#2(\tita #1,\phi #1)}^{#3}} \NC{\ArmSr}[2]{Y_{#1,#2}} %Armónicos Esféricos.
+\NC{\G}[1]{\Gama_{\lp{#1}\rp}} \NC{\PG}[2][]{\psi_{\lp{#2}\rp}^{#1}} %Función Gama.
+\NC{\BesJ}[2]{J_{#1\tres\lp{#2}\rp}} \NC{\BesN}[2]{N_{#1\tres\lp{#2}\rp}} \NC{\BesI}[2]{I_{#1\tres\lp{#2}\rp}} \NC{\BesK}[2]{K_{#1\tres\lp{#2}\rp}} %Funciones De Bessel.
+
+
+%Distribuciones:
+\NC{\dirac}[2][]{\del_{#2}^{#1}} %Dirac.
+\NC{\kro}[1]{\del_{#1}} \Mo{\var}{var} %Kronecker.
+%Límites, Límite Superior, Límite Inferior, Máximo, Mínimo, Supremo, Ínfimo:
+\Mo*{\Lim}{\tx{lím}}
+\RC{\lim}[3]{\Lim\limits_{#1 \to #2} #3}
+%Límite Doble:
+\NC{\llim}[5]{\Lim\limits_{#3 \to #4} \Lim\limits_{#1 \to #2} #5}
+\NC{\liim}[5]{\Lim\limits_{\lp{#1,#2}\rp\, \to \,\lp{#3,#4}\rp} #5} %Forma Compacta.
+%Límite Triple:
+\NC{\lllim}[7]{\Lim\limits_{#5 \to #6} \Lim\limits_{#3 \to #4} \Lim\limits_{#1 \to #2} #7}
+\NC{\liiim}[7]{\Lim\limits_{\lp{#1,#2,#3}\rp\, \to \,\lp{#4,#5,#6}\rp} #7} %Forma Compacta.
+%Límite n-ésimo:
+\NC{\limite}[4][]{\Mc{\Lim\limits_{\lp{{#2}_1,\pors,{#2}_{#1}}\rp\, \to \,\lp{{#3}_1,\pors,{#3}_{#1}}\rp} #4}}
+%Límite Superior:
+\Mo*{\Lims}{\tx{lím} \, \tx{sup}}
+\NC{\lims}[3]{\Lims\limits_{#1 \to #2} #3}
+%Límite Inferior:
+\Mo*{\Limi}{\tx{lím} \, \tx{inf}}
+\NC{\limi}[3]{\Limi\limits_{#1 \to #2} #3}
+%Máximo:
+\Mo*{\Max}{\tx{máx}}
+\RC{\max}[2]{\Max\limits_{#1} \lla{#2}\rla}
+%Mínimo:
+\Mo*{\Min}{\tx{mín}}
+\RC{\min}[2]{\Min\limits_{#1} \lla{#2}\rla}
+%Supremo:
+\Mo*{\Sup}{sup}
+\RC{\sup}[2]{\Sup\limits_{#1} \lla{#2}\rla}
+%Ínfimo:
+\Mo*{\Infm}{\tx{ínf}}
+\NC{\infm}[2]{\Infm\limits_{#1} \lla{#2}\rla}
+%Signos De Derivada:
+\RC{\d}[1][]{\tx{d}_{#1}}
+\NCX{\p}[2][1=,2=]{\partial_{#1}^{#2}} %Derivada Parcial.
+%Derivada:
+\NC{\dv}[3][]{\Mc{\fr{\d^{#1} #2}{\d #3^{#1}}}}
+%Derivada Direccional:
+\NC{\ddir}[2]{\tx{D}_{#1} #2}
+%Derivada Relativa:
+\NC{\dvr}[4][]{\Mc{\fr{\d^{#1} #2}{\d #3^{#1}}\bigg|_{#4}}}
+\NC{\pdr}[4][]{\Mc{\fr{\partial^{#1} #2}{\p #3^{#1}}\bigg|_{#4}}} %Derivada Parcial.
+%Derivada Parcial:
+\NC{\pd}[3][]{\Mc{\fr{\partial^{#1}#2}{\p #3^{#1}}}} %Orden n.
+
+\makeatletter
+\def\@IntergerSum{0}
+\def\@NonIntergerSum{}
+\NC{\@GetSumAux}[1]{\IfStrEq{#1}{}{}{\IfInteger{#1}{\edef\@IntergerSum{\fpeval{\@IntergerSum + #1}}}{\IfStrEq{\@NonIntergerSum}{}{\g@addto@macro\@NonIntergerSum{#1}}{\g@addto@macro\@NonIntergerSum{+ #1}}}}}
+\NC{\@GetSum}[5]{\gdef\@IntergerSum{0} \gdef\@NonIntergerSum{} \@GetSumAux{#2} \@GetSumAux{#3} \@GetSumAux{#4} \@GetSumAux{#5} \IfStrEq{\@NonIntergerSum}{}{\@GetExponent{#1}{\@IntergerSum}}{\IfStrEq{\@IntergerSum}{0}{\edef#1{^{\@NonIntergerSum}}}{\edef#1{^{\@NonIntergerSum + \@IntergerSum}}}}}
+\NC{\@GetExponent}[2]{\IfStrEq{#2}{}{\def#1{}}{\IfStrEq{#2}{1}{\def#1{}}{\def#1{^{#2}}}}}
+\NC{\@ShowVar}[2]{\IfStrEq{#1}{}{}{\partial#1#2}}
+\NC*{\@SumExponenet}{}
+\NC{\@PPD}[9]{\begingroup \@GetSum{\@SumExponenet}{#3}{#5}{#7}{#9} \@GetExponent{\@ExponenentV}{#3} \@GetExponent{\@ExponenentX}{#5} \@GetExponent{\@ExponenentY}{#7} \@GetExponent{\@ExponenentZ}{#9} \fr{\partial\@SumExponenet#1}{\@ShowVar{#2}{\@ExponenentV} \@ShowVar{#4}{\@ExponenentX} \@ShowVar{#6}{\@ExponenentY} \@ShowVar{#8}{\@ExponenentZ}} \endgroup}
+
+\NC{\ppd}[5]{\@PPD{#1}{#4}{#5}{#2}{#3}{}{}{}{}} %Derivada Parcial En Dos Variables.
+\NC{\pppd}[7]{\@PPD{#1}{#6}{#7}{#4}{#5}{#2}{#3}{}{}} %Derivada Parcial En Tres Variables.
+\NC{\ppppd}[9]{\@PPD{#1}{#8}{#9}{#6}{#7}{#4}{#5}{#2}{#3}} %Derivada Parcial En Cuatro Variables.
+\makeatother
+
+%Integral De Una Variable:
+\NC{\Int}[4]{\int\limits_{#1}^{#2} #3 \; \d #4}
+\NC{\Intj}[4]{\int\limits_{#1}^{#2} #3 \; \dj #4} %Integral Con Diferencial Inexacto.
+%Integral De Dos Variables:
+\NC{\ii}[7]{\int\limits_{#3}^{#4}\!\int\limits_{#1}^{#2} #5 \; \d #6 \, \d #7}
+%Integral De Tres Variables:
+\NC{\iii}[7]{\int\limits_{#5}^{#6}\!\int\limits_{#3}^{#4}\!\int\limits_{#1}^{#2} #7 \; \dxyz} \NC{\dxyz}[3]{\d #1 \, \d #2 \, \d #3}
+%Integral De Línea De Un Campo Escalar:
+\NC{\ils}[4][]{\int\limits_{#2}^{#1} #3 \; \tx{d#4}}
+\NC{\ilos}[4][]{\oint\limits_{#2}^{#1} #3 \; \tx{d#4}} %Integral Cerrada.
+\NC{\iloscl}[4][]{\ointclockwise\limits_{#2}^{#1} #3 \; \tx{d#4}} %Integral Cerrada Orientada Negativamente (En Sentido Horario).
+\NC{\iloscr}[4][]{\ointctrclockwise\limits_{#2}^{#1} #3 \; \tx{d#4}} %Integral Cerrada Orientada Positivamente (En Sentido Anti-Horario).
+%Integral De Línea De Un Campo Vectorial:
+\NC{\ilv}[4][]{\int\limits_{#2}^{#1} #3 \por \d \bs{#4}}
+\NC{\ilov}[4][]{\oint\limits_{#2}^{#1} #3 \por \d \bs{#4}} %Integral Cerrada.
+\NC{\ilovcl}[4][]{\ointclockwise\limits_{#2}^{#1} #3 \por \d \bs{#4}} %Integral Cerrada Orientada Negativamente (En Sentido Horario).
+\NC{\ilovcr}[4][]{\ointctrclockwise\limits_{#2}^{#1} #3 \por \d \bs{#4}} %Integral Cerrada Orientada Positivamente (En Sentido Anti-Horario).
+%Integral De Superficie De Un Campo Escalar:
+\NC{\iss}[4][]{\iint\limits_{#2}^{#1} #3 \; \tx{d#4}}
+\NC{\isos}[4][]{\oiint\limits_{#2}^{#1} #3 \; \tx{d#4}} %Integral Cerrada.
+%Integral De Superficie De Un Campo Vectorial:
+\NC{\isv}[4][]{\iint\limits_{#2}^{#1} #3 \por \d \ff{#4}}
+\NC{\isov}[4][]{\oiint\limits_{#2}^{#1} #3 \por \d \ff{#4}} %Integral Cerrada.
+%Integral De Volumen De Un Campo Escalar:
+\NC{\ivs}[4][]{\iiint\limits_{#2}^{#1} #3 \; \tx{d#4}}
+\NC{\ivsr}[4][]{\iiint\limits_{#2}^{#1} #3 \; \tx{d}^3\vc{#4}} %Notación Vectorial.
+%Integral De Volumen De Un Campo Vectorial:
+\NC{\ivv}[4][]{\iiint\limits_{#2}^{#1} #3 \por \d \ff{#4}}
+
+%Transformada De Fourier:
+\NC{\TransF}[3]{\cal{F}_{#1 \,\lb{#2}\rb\,\,\lp{#3}\rp}}
+%Transformada De Laplace:
+\NC{\TransL}[3]{\cal{L}_{#1 \,\lb{#2}\rb\,\,\lp{#3}\rp}}
+
+%Sumatoria:
+\RC{\S}[3]{\sum\limits_{#1}^{#2} #3}
+\RC{\SS}[5]{\sum\limits_{#3}^{#4} \sum\limits_{#1}^{#2} #5} %Suma Doble.
+\NC{\SSS}[7]{\sum\limits_{#5}^{#6} \sum\limits_{#3}^{#4} \sum\limits_{#1}^{#2} #7} %Suma Triple.
+%Productoria:
+\RC{\P}[3]{\prod\limits_{#1}^{#2} #3}
+\NC{\PP}[5]{\prod\limits_{#3}^{#4} \prod\limits_{#1}^{#2} #5} %Producto Doble.
+\NC{\PPP}[7]{\prod\limits_{#5}^{#6} \prod\limits_{#3}^{#4} \prod\limits_{#1}^{#2} #7} %Producto Triple.
+%Unión:
+\NC{\U}[3]{\bigcup\limits_{#1}^{#2} #3}
+\NC{\UU}[5]{\bigcup\limits_{#3}^{#4} \bigcup\limits_{#1}^{#2} #5} %Unión Doble.
+\NC{\UUU}[7]{\bigcup\limits_{#5}^{#6} \bigcup\limits_{#3}^{#4} \bigcup\limits_{#1}^{#2} #7} %Unión Triple.
+%Intersección:
+\NC{\I}[3]{\bigcap\limits_{#1}^{#2} #3}
+\NC{\II}[5]{\bigcap\limits_{#3}^{#4} \bigcap\limits_{#1}^{#2} #5} %Intersección Doble.
+\NC{\III}[7]{\bigcap\limits_{#5}^{#6} \bigcap\limits_{#3}^{#4} \bigcap\limits_{#1}^{#2} #7} %Intersección Triple.
+%Suma Directa:
+\NC{\SD}[3]{\bigoplus\limits_{#1}^{#2} #3}
+
+%Operaciones Entre Matrices:
+\NC{\tras}[1]{{#1}^{\tx{t}}} %Matriz Transpuesta.
+\RC{\ast}[1]{{#1}^*} %Matriz Transpuesta Conjugada.
+\Mo{\adj}{adj} %Matriz Adjunta.
+\NC{\psinv}[1]{{#1}^+} %Matriz Pseudo Inversa.
+
+
+%Características De Una Matriz:
+\Mo{\Nu}{Nu} %Núcleo.
+\Mo{\rang}{rang} %Rango.
+\Mo{\tr}{tr} %Traza.
+\Mo{\diag}{diag} %Diagonal.
+
+
+%Coeficiente Binomial:
+\RC{\binom}[2]{\begin{pmatrix} #1 \\ #2 \end{pmatrix}}
+%Matriz Con Paréntesis:
+\NC{\lpm}{\begin{pmatrix}}
+\NC{\rpm}{\end{pmatrix}}
+%Matriz Con Corchetes:
+\NC{\lbm}{\begin{bmatrix}}
+\NC{\rbm}{\end{bmatrix}}
+%Matriz Con Llaves:
+\NC{\llam}{\begin{Bmatrix}}
+\NC{\rlam}{\end{Bmatrix}}
+%Matriz Con Módulo (Determinante):
+\NC{\lvm}{\begin{vmatrix}}
+\NC{\rvm}{\end{vmatrix}}
+%Matriz Con Norma:
+\NC{\lvvm}{\begin{Vmatrix}}
+\NC{\rvvm}{\end{Vmatrix}}
+%Dimensiones
+\NC{\dxd}{2 \Por 2}
+\NC{\txt}{3 \Por 3}
+\NC{\nxn}{n \Por n}
+\NC{\nxm}{n \Por m}
+%Alfabeto Griego:
+\NC{\alfa}{\alpha} \NC{\Alfa}{\tx{A}}
+\NC{\vita}{\beta} \NC{\Vita}{\tx{B}}
+\NC{\gama}{\gamma} \NC{\Gama}{\Gamma}
+\NC{\del}{\delta} \NC{\Del}{\Delta}
+\NC{\eps}{\varepsilon} \NC{\Eps}{\tx{E}} \NC{\epsj}{\epsilon}
+\NC{\zita}{\zeta} \NC{\Zita}{\tx{Z}}
+\NC{\ita}{\eta} \NC{\Ita}{\tx{H}}
+\NC{\tita}{\theta} \NC{\Tita}{\Theta} \NC{\titaj}{\vartheta}
+\NC{\Iota}{\tx{I}} 
+\NC{\kapa}{\kappa} \NC{\Kapa}{\tx{K}}
+\NC{\lamda}{\lambda} \NC{\Lamda}{\Lambda}
+\NC{\mi}{\mu} \NC{\Mi}{\tx{M}}
+\RC{\ni}{\nu} \NC{\Ni}{\tx{N}}
+\NC{\omicron}{o} \NC{\Omicron}{\tx{O}}
+\NC{\ro}{\rho} \NC{\Ro}{\tx{P}} \NC{\roj}{\varrho}
+\NC{\taf}{\tau} \NC{\Taf}{\tx{T}}
+\NC{\yps}{\upsilon} \NC{\Yps}{\Upsilon}
+\let\phij\phi \RC{\phi}{\varphi}
+\NC{\ji}{\chi} \NC{\Ji}{\tx{X}}
+
+%Operadores Matemáticos:
+\NC{\fr}{\dfrac} %Fracción.
+\NC{\frr}[2]{\SB{0.7}{$\dfrac{#1}{#2}$}} %Fracción Reducida.
+\NC{\frrr}[2]{\SB{0.6}{$\dfrac{#1}{#2}$}} %Fracción Reducida.
+\NC{\inv}[1]{{#1}^{\tx{-1}}} %Inversa.
+\NC{\rz}{\sqrt} %Raíz.
+\NC{\norm}[2][]{\Mc{{\left|\left|{#2}\right|\right|}_{#1}}} %Norma.
+\RC{\log}[2][]{\Op{log}_{#1} #2} %Logaritmo.
+
+%Desigualdades:
+\NC{\dis}{\neq} %Distinto.
+\NC{\apx}{\approx} %Aproximadamente.
+\NC{\apxig}{\simeq} %Aproximadamente Igual.
+\NC{\eqv}{\equiv} %Equivalente.
+\NC{\mig}{\geqslant} %Mayor O Igual.
+\NC{\nig}{\leqslant} %Menor O Igual.
+\NC{\mm}{\gg} %Mucho Mayor.
+\NC{\nn}{\ll} %Mucho Menor.
+\NC{\mn}{\gtrless} %Mayor Menor.
+\NC{\nm}{\lessgtr} %Menor Mayor.
+\NC{\mign}{\gtreqless} %Mayor Igual Menor.
+
+%Conjuntos Numéricos:
+\NC{\nin}{\notin}
+\NC{\inc}{\subseteq} %Incluído.
+\NC{\vacio}{\varnothing} %Conjunto Vacío.
+\RC{\inf}{\infty} %Infinito.
+
+%Símbolos Lógicos:
+\NC{\simy}{\wedge} %Y.
+\NC{\simo}{\vee} %O.
+\NC{\ex}{\exists \ } %Existe.
+\NC{\exu}{\exists! \ } %Existe Un Único.
+\NC{\nex}{\nexists \ } %No Existe.
+\NC{\ptd}{\ \forall \ } %Para Todo.
+\NC{\plt}{\therefore} %Por Lo Tanto.
+\NC{\porq}{\because} %Porque.
+\NC{\prop}{\propto} %Proporcional.
+\NC{\QED}{\blacksquare} %Queda Demostrado.
+\NC{\pors}{\dots} %Puntos Suspensivos.
+\NC{\porv}{\vdots} %Puntos Verticales.
+\NC{\porh}{\cdots} %Puntos Centrados.
+\NC{\pord}{\ddots} %Puntos Diagonales.
+\NC{\grs}{^{\circ}} %Grados.
+
+%Flechas:
+\NC{\To}{\longrightarrow} %Hacia.
+\NC{\ent}{\Rightarrow} %Entonces.
+\NC{\Ent}{\Longrightarrow} %Entonces Largo.
+\NC{\sii}{\Leftrightarrow} %Si Y Solo Si.
+\NC{\Sii}{\Longleftrightarrow} %Si Y Solo Si Largo.
+\NC{\Tiende}{\xrightarrow} %Tiende.
+\NC{\Sneg}{\circlearrowright} %Sentido Negativo (Horario).
+\NC{\Spos}{\circlearrowleft} %Sentido Positivo (Anti-Horario).
+
+%Geometría:
+\NC{\paral}{\parallel} %Paralelo.
+\NC{\dist}[2]{\Op{dist} \lla{#1\dos , \unol #2}\rla} %Distancia Entre Dos Puntos.
+\RC{\dim}[2]{\Op{dim}_{(\bb{#1})} #2} %Dimensión.
+
+%Acentos:
+\NC{\vm}[1]{\la #1 \ra} %Valor Medio.
+\NC{\tc}[1]{{#1}^{\dagger}}
+
+%Análisis Complejo:
+\NC{\conj}[1]{{#1}^*} %Conjugado.
+\NC{\re}[2][]{\Mc{\Op{Re}^{#1}\lla{#2}\rla}} %Parte Real.
+\NC{\im}[2][]{\Mc{\Op{Im}^{#1}\lla{#2}\rla}} %Parte Imaginaria.
+\Mo{\Arg}{Arg} %Argumento.
+\Mo{\Log}{Log} %Logaritmo Principal.
+\NC{\res}[3][]{\Op{Res}^{#1}\lla{#2,#3}\rla} %Residuo.
+
+%Análisis Numérico:
+\NC{\cond}[2]{\Op{Cond}_{#1} #2} %Número De Condición.

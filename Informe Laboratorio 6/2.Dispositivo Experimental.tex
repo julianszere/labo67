@@ -1,0 +1,33 @@
+    \section{Dispositivo Experimental}
+		\subsection{Reactor Trielectródico Híbrido}
+En este trabajo se partió del diseño de un reactor de NTP trielectródico realizado por alumnos de laboratorio 6 y 7 en el año 2023 \cita{14}. El reactor híbrido que se montó para tratar aguas contaminadas se muestra esquematizado en la Fig. \ref{fig:Esquema Reactor}. \\
+\begin{figure}[!htbp] \centering
+    \vspace{-.25cm}
+    \SB{1.1}{\input{Tikz/Esquema Dispositivo}}
+    \vspace{-.25cm}
+    \caption{esquema del dispositivo experimental utilizado.}
+    \label{fig:Esquema Reactor}
+\end{figure}
+
+Para producir el NTP, se genera una DBD entre los electrodos E1 y E2 aplicando alta tensión alterna. Esta tensión viene dada por una fuente AC que consiste en un generador de funciones (Sinometer VC2002) conectado a un amplificador de audio (SKP MAX G1400) acoplado a una bobina de alta tensión. Junto al E2 se conecta una fuente de tensión continua DC (Protomax HY3005D-3) que eleva a todo el circuito en un rango de tensiones $V_{\tx{DC}} = (7$-$10) \n{kV}$ dependiendo de la experiencia realizada, y genera el campo eléctrico necesario para extender la región de la DBD hacia el E3. El electrodo a tierra E3 se coloca a centímetros del sistema E1-E2 para que los streamers de plasma alcancen la superficie del agua a tratar. En su superficie, se ubica alineada con el sistema de electrodos una pieza de vidrio recubierta con $\tx{TiO}_2$ (sintetizada mediante la técnica de arcos catódicos) para actuar como material fotocatalizador y promover las reacciones de oxidación y reducción en la superficie del agua contaminada. El reactor permite la conexión en paralelo de hasta ocho pares de electrodos E1-E2, cuyos extremos encastran a presión en el reactor y que se encuentran en contacto con el ramal de la fuente AC. Dependiendo de la experiencia, se trabajó para la fuente alterna en un rango de tensiones pico a pico $V_{\tx{AC}} = (11$-$16) \n{kV}$ y con una frecuencia aproximada de $8 \n{kHz}$.  Ésta se encuentra determinada por la resonancia del sistema del reactor en su conjunto, que, al contar con partes capacitivas, resistivas e inductantes, puede asociarse de maner simplificada a un circuito RLC equivalente. \\\\
+Para la caracterización eléctrica del reactor, se mide tensión y corriente con un osciloscopio Tektronix TBS1104 digital de cuatro canales ($100 \n{MHz}$, $1 \n{GS}/\tx{s}$), donde la tensión se obtiene con una punta de alto voltaje Tektronix P6015A (1000X, de $3 \n{pF}$ y $100 \n{M}\Omega$) sobre la fuente de AC y la corriente se calcula como la caida de potencial en una resistencia de $50\,\Omega$ a la salida de E3. Hacer esto implica despreciar la corriente $I_{\tx{dbd}}$ entre el sistema de electrodos E1 y E2 frente a la corriente de streamers $I_{\tx{str}}$ que cruza al tercer electrodo, como se justificó en otros trabajos \cita{12}. \\\\
+Por la acción de una bomba peristáltica Apema PC25-10-F-S de Clase 1 ($10 \n{W}$) circula el agua a tratar con un caudal de $1 \n{ml}/\tx{s}$ y con una profundidad en la canaleta de $1 \n{mm}$. Se elige esta configuración debido a que, como se mencionó en la introducción, la descarga efectuada actúa en el agua contaminada de forma superficial. La solución llega hasta una canilla y cae en un vaso de precipitado que se encuentra apoyado sobre un agitador magnético ArcanO HJ-3 ($2 \n{A}$) que permite su homogeneización. El agua recircula varias veces por el reactor a lo largo del tratamiento.
+		\subsection{Sistema de electrodos DBD} \label{sec:Sistema de electrodos}
+El sistema de electrodos E1-E2 que generan la DBD se compone de dos placas de acero inoxidable separadas por un dieléctrico. En la cara frontal del dieléctrico, con forma rectangular, se encuentra ubicado el E1. En la cara opuesta, con forma de ``L'', se encuentra el E2. Ambos electrodos pueden verse representados en la Fig. \ref{fig:Rectificado}. \\\\
+Como materiales dieléctricos en esta configuración se emplearon acrílico y teflón. Para la correcta colocación del electrodo E1 sobre el dieléctrico se realizó un rectificado que funciona como guía y que deja $6 \n{mm}$ de distancia con el borde para formar la DBD en la parte inferior del rectificado. Por otro lado, en el dorso del dieléctrico, el E2 se encastra en el rectificado trasero sin dejar espacios libres.
+\NP
+\begin{figure}[!htbp] \centering
+    \vspace{-.5cm}
+    \SB{1}{\input{Tikz/Rectificado}}
+    \caption{esquema del sistema de electrodos DBD utilizando acrílico o teflón como material dieléctrico. Las medidas se encuentran en mm.}
+    \label{fig:Rectificado}
+\end{figure}
+En trabajos anteriores, por encima de estos electrodos se aplicaba una gran capa de pegamento epoxi que los mantenía unidos al dieléctrico. El exceso de este adhesivo era responsable de la generación de burbujas de aire y, por lo tanto, de la generación de descargas indeseadas. Para optimizar este diseño y reducir la cantidad de pegamento del sistema E1-E2, se diseñaron dos tapas de acrílico de $2,5 \n{mm}$ de espesor para fijar los electrodos. En la cara frontal del dieléctrico se utiliza una tapa en forma de ``U'' invertida, mientras que para la cara trasera se agrega una tapa en forma rectangular, tal y como se muestra en la Fig. \ref{fig:Tapas} (en verde). Estas tapas son adheridas al sistema de electrodos con una leve capa de pegamento y, además de fijar al electrodo en su lugar, también delimitan la zona de encastre con las ranuras del reactor. Además, en el rectificado de la cara frontal, la tapa en forma de ``U'' cuenta con un soporte de $6\Por 18\n{mm}$ para mayor adherencia entre el dieléctrico y la tapa. \\
+\begin{figure}[!htbp] \centering
+    \vspace{-.5cm}
+    \SB{1}{\input{Tikz/Sistema De Electrodos}}
+    \caption{esquema representativo del diseño de tapas (en verde) para fijar los electrodos E1 y E2 (en gris) a los acrílicos (en celeste), marcando también los puntos de contacto eléctrico con el reactor. En violeta, se muestra la zona donde se genera la DBD. Las medidas se encuentran en mm.}
+    \label{fig:Tapas}
+\end{figure}
+
+Por último, se estudió también un sistema de electrodos implementando vidrio como material dieléctrico. Para ello, se le realizó un rectificado más profundo al dieléctrico de acrílico. En particular, se aumentó en $1 \n{mm}$ el rectificado en la cara frontal y en este espacio se insertó una pieza rectangular de vidrio. Luego se colocó el electrodo E1 y las tapas de acrílico por encima, manteniendo el diseño de la cara trasera sin modificaciones.

@@ -10,9 +10,9 @@ from signals import Signals
 
 
 class WaterTreatment(Signals):
-    def __init__(self, folder, V=200):
+    def __init__(self, folder, Vol=200):
         Signals.__init__(self, folder)
-        self.V = V
+        self.Vol = Vol
         self.t, self.A = self.get_data(folder)
         self.C = self.get_concentrations()
         self.DE = self.get_degradations()
@@ -34,7 +34,7 @@ class WaterTreatment(Signals):
     def get_efficiencies(self):
         M_0 = ufloat(c.M_0, c.M_0_ERR)
         V_0 = ufloat(c.V_0, c.V_0_ERR)
-        return 6 * M_0 / V_0 * self.DE[1:] * self.V / (10**4 * self.P_avg * self.t[1:])
+        return 6 * M_0 / V_0 * self.DE[1:] * self.Vol / (10**4 * self.P_avg * self.t[1:])
     
     def plot_concentration(self, label=None):
         plt.plot(unp.nominal_values(self.t), unp.nominal_values(self.C), color=self.color, label=label, marker='o')

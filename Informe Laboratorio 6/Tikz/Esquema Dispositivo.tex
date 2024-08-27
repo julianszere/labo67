@@ -1,0 +1,56 @@
+\begin{circuitikz}
+    \SB{0.75}{
+        \begin{scope}
+            \fill[cyan!75] (.9,1.75) rectangle ++(.2,.4) ++(0,-.2) rectangle ++(1.35,.2) ++(-.2,-.4) rectangle ++(.2,.2); \draw (.9,1.75) to ++(0,.4) to ++(1.55,0) to ++(0,-.4) ++(-.2,0) to ++(0,.2) to ++(-1.15,0) to ++(0,-.2); \fill[gray!15] (0,0) rectangle ++(3.35,1.75); \draw (0,0) rectangle ++(3.35,1.75); \fill[blue!100] (.25,.35) rectangle ++(1.15,1.05); \draw (.25,.35) rectangle ++(1.15,1.05); \draw (1.75,1.5) circle(.9mm); \draw (2,1.15) circle(.6mm) ++(.35,0) circle(.6mm) ++(.35,0) circle(.6mm) ++(.35,0) circle(.6mm); \draw (2,.6) circle(.7mm) ++(.35,0) circle(.7mm) ++(.35,0) circle(.7mm); \draw[fill,black!100] (2,.3) circle(.5mm) ++(.35,0) circle(.5mm) ++(.35,0) circle(.5mm); \draw (1.5,.4) rectangle ++(.1,.1) ++(-.1,.1) rectangle ++(.1,.1) ++(-.1,.1) rectangle ++(.1,.1) ++(-.1,.1) rectangle ++(.1,.1) ++(-.1,.1) rectangle ++(.1,.1); \draw (2,1.55) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07); \draw (2,1.4) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07) rectangle ++(.07,.07) ++(.1,-.07); \draw (1.965,.845) rectangle ++(.07,.07) ++(.28,-.07) rectangle ++(.07,.07) ++(.28,-.07) rectangle ++(.07,.07) ++(.28,-.07) rectangle ++(.07,.07);
+        \end{scope}} % Osciloscopio
+        
+    \draw (2.025,.2) to ++(0,-.5) to ++(1,0) to ++(0,2) to ++(1,0); % Cable 1
+    \fill[black!80] (3.975,1.675) rectangle ++(.5,.05) ++(-.4,-.15) rectangle ++(.05,.25); \draw (3.975,1.675) rectangle ++(.5,.05) ++(-.4,-.15) rectangle ++(.05,.25); % Punta
+    \draw (4.525,1.7) to ++(4.75,0) to ++(0,-3.85) to[short,-o] ++(-.2,0); % Cable 1 a E1
+    \draw (4.55,1.7) to[sV,o-o] ++(0,-2.8) to[battery1] ++(0,-1) to ++(0,-.7) to[short,*-] ++(0,-.25) node[ground]{}; % Cable 1 a Tierra
+    \draw (4.55,-1.1) to[short,o-] ++(3.75,0) to ++(0,-1.325) to[short,-o] ++(.375,0); %Cable 1 a E2
+    \draw (1.5,.25) to ++(0,-2.55) to ++(2.55,0) to[crossing] ++(1,0) to ++(0,-.5) ++(0,.5) to ++(1.5,0) to ++(0,-.5); % Cable 2
+
+    
+    %%  Reactor
+    \fill[black!80] (8,-1.5) rectangle ++(4,-.1); \fill[black!80] (8,-3.5) rectangle ++(.1,2) ++(-.1,-2) rectangle ++(4,.1) ++(-.1,-.1) rectangle ++(.1,2); \draw (8,-3.5) rectangle ++(4,2); \fill[black!80] (8.25,-3.5) rectangle ++(.4,-2) ++(2.7,0) rectangle ++(.4,2); \draw (8.25,-3.5) rectangle ++(.4,-2) ++(2.7,0) rectangle ++(.4,2); % Reactor
+    \begin{scope}[fill opacity=0.75]
+        \fill[cyan!60] (8.75,-2.5) rectangle ++(.25,1);
+    \end{scope}
+    \fill[gray!80] (8.75,-2.5) rectangle ++(.075,.15) ++(.1,0) rectangle ++(.075,.4); \draw (8.75,-2.5) rectangle ++(.25,1) ++(-.25,-1) rectangle ++(.075,.15) ++(.1,0) rectangle ++(.075,.4); % Electrodo 1
+    \draw[dashed] (9.5,-2.5) rectangle ++(.25,1) ++(-.25,-1) rectangle ++(.075,.15) ++(.1,0) rectangle ++(.075,.4); % Electrodo 2
+    \draw[dashed] (10.25,-2.5) rectangle ++(.25,1) ++(-.25,-1) rectangle ++(.075,.15) ++(.1,0) rectangle ++(.075,.4); % Electrodo 3
+    \draw[dashed] (11,-2.5) rectangle ++(.25,1) ++(-.25,-1) rectangle ++(.075,.15) ++(.1,0) rectangle ++(.075,.4); % Electrodo 4
+    \fill[black!80] (7.5,-3) rectangle ++(.5,.3) ++(4,-.3) rectangle ++(.5,.3); \draw (7.5,-3) rectangle ++(.5,.3) ++(4,-.3) rectangle ++(.5,.3); \fill[blue!100] (8.1,-2.955) rectangle ++(3.8,.1); \fill[gray!80] (8.1,-2.995) rectangle ++(3.8,.05); \draw (8.1,-3) rectangle ++(3.8,.05); \draw[dashed] (8,-2.7) to ++(4,0); \fill[gray!30] (12.375,-3) rectangle ++(-.25,-.25); \draw (12.375,-3) rectangle ++(-.25,-.25); \fill[orange!30] (8.7,-2.95) rectangle ++(.35,.05); \draw (8.7,-2.95) rectangle ++(.35,.05); % Canaleta
+    \fill[violet!45] (8.835,-2.85) rectangle ++(.075,.34); \draw[violet!80] (8.835,-2.85) rectangle ++(.075,.34); \draw[violet!80] (8.83,-2.485) to ++(.16,0) to ++(0,.125); % Plasma
+
+
+    \fill[pattern=north east lines] (5.75,-5.5) rectangle ++(8.5,-.25); \draw (5.75,-5.5) to ++(8.5,0); % Piso
+    \fill[gray!50] (11.85,-5.5) rectangle ++(1.5,.4); \draw (11.85,-5.5) rectangle ++(1.5,.4); \fill[gray!10] (11.95,-5) rectangle ++(1.1,-.1); \draw (11.95,-5) rectangle ++(1.1,-.1);
+    \fill[black!75] (12.1,-5.3) circle (.075cm); \draw (12.1,-5.3) circle (.075cm); \fill[green!100] (12.4,-5.3) circle (.065cm); \draw (12.4,-5.3) circle (.065cm); \fill[black!45] (12.65,-5.4) rectangle ++(.115,.2); \draw (12.65,-5.4) rectangle ++(.115,.2); \fill[black!45] (12.95,-5.4) rectangle ++(.115,.2); \draw (12.95,-5.4) rectangle ++(.115,.2); % Agitador magnético
+    \fill[blue!100] (12.2,-3.25) rectangle ++(.1,-.75) ++(-.1,0) rectangle ++(.1,-.75) ++(-.3,0) rectangle ++(1,-.25); % Agua Vaso
+    \fill[blue!100] (7.65,-2.51) rectangle ++(.07,-.18);
+    \fill[yellow!100] (12,-4.825) rectangle ++(-.9,-.1) rectangle ++(.1,-.425) rectangle ++(-3.5,.1); \draw (12,-4.825) to ++(-.9,0) to ++(0,-.425) to ++(-3.35,0) ++(0,-.1) to ++(3.45,0) to ++(0,.425) to ++(.8,0); % Manguera
+    \draw (12,-5) to ++(0,1) to ++(1,0) ++(0,-.15) to ++(0,-.85) to ++(-1,0); \draw (13,-4.15) to ++(.15,.165) to ++(-.15,-.015); \draw (12.4,-4.9) to ++(.2,0) ++(-.2,.2) to ++(.2,0) ++(-.2,.2) to ++(.2,0) ++(-.2,.2) to ++(.2,0) ++(-.2,-.1) to ++(.1,0) ++(-.1,-.2) to ++(.1,0)  ++(-.1,-.2) to ++(.1,0); % Vaso de precipitado
+    \fill[yellow!100] (6.95,-4.5) rectangle ++(.09,2.24) ++(-.09,0) rectangle ++(.69,.1) ++(.1,0) rectangle ++(-.1,-.34); \draw (6.96,-4.5) to ++(0,2.33) to ++(.77,0) to ++(0,-.33) to ++(-.08,0) to ++(0,.25) to ++(-.62,0) to ++(0,-2.25); % Manguera bomba
+    \fill[gray!30] (6.25,-5.5) rectangle ++(1.5,1); \fill[yellow!100] (6.75,-5) circle(3.5mm); \fill[gray!30] (6.75,-4.5) rectangle ++(.4,-1); \draw (6.75,-5) circle(3.5mm); \fill[gray!30] (6.75,-5) circle(2.5mm); \draw (6.75,-5) circle(2.5mm); \fill[yellow!100] (7.75,-5.25) rectangle ++(-1,-.1); \draw (7.75,-5.25) to ++(-1,0) ++(0,-.1) to ++(1,0); \fill[yellow!100] (7.03,-4.5) rectangle ++(-.07,-.2525) rectangle ++(-.21,.1); \draw (7.03,-4.5) to ++(0,-.251) to ++(-.3,0) ++(0,.1) to ++(.23,0) to ++(0,.15); \draw (6.25,-5.5) to ++(0,1) to ++(1.5,0) to ++(0,-.75) ++(0,-.1) to ++(0,-.15) to ++(-1.5,0); \fill[rotate around={60:(6.75,-5)}, black!80] (6.75,-5) ellipse (1.85mm and 2.95mm); \draw[rotate around={60:(6.75,-5)}] (6.75,-5) ellipse (1.85mm and 2.95mm); \fill[gray!20] (6.75,-5) circle (.75mm); \draw (6.75,-5) circle (.75mm); \fill[red!70] (7.25,-4.5) rectangle ++(.25,.2); \draw[pattern=vertical lines] (7.25,-4.5) rectangle ++(.25,.2); \draw (7.25,-4.5) rectangle ++(.25,.2); % Bomba peristáltica
+    \draw (4.55,-2.8) to ++(.5,0) to[R,o-o] ++(1.5,0) to[crossing,-o] ++(.89,0); % R a E3
+
+    
+    \draw (1.25,1.55) node[label={[font=]:Osciloscopio}]{};
+    \draw (4.55,1.6) node[label={[font=\small]:Punta de alta tensión}]{};
+    \draw (5.5,-.12) node[label={[font=]:$V_{\tx{AC}}$}]{};
+%    \draw (6.1,-1.05) node[label={[font=]:Amplificador}]{};
+    \draw (3.6,-2) node[label={[font=]:$V_{\tx{DC}}$}]{};
+    \draw (5.75,-3.6) node[label={[font=]:$R = 50 \,\Omega$}]{};
+    \draw (14.4,-5.4) node[label={[font=\small]:Agitador}]{};
+    \draw (14.4,-5.7) node[label={[font=\small]:magnético}]{};
+    \draw[->,blue!100, dashed] (12,-4.875) to ++(-.85,0) to ++(0,-.425) to ++(-1,0); \draw[->,blue!100, dashed] (6.995,-2.6) to ++(0,.39) to ++(.5,0);
+    \draw (5,-5.1) node[label={[font=]:Bomba}]{};
+    \draw (5,-5.6) node[label={[font=]:peristáltica}]{};
+    \draw (10.05,1.175) node[label={[font=]:E3}]{}; \draw[<-,red!100] (8.45,-2.96) to ++(0,4.55) to ++(1.215,0);
+    \draw (10.05,.325) node[label={[font=]:E2}]{}; \draw[<-,red!100] (8.785,-2.34) to ++(0,3.08) to ++(.875,0);
+    \draw (10.05,-.525) node[label={[font=]:E1}]{}; \draw[<-,red!100] (8.955,-1.94) to ++(0,1.83) to ++(.69,0);
+    \draw (14,-1.3) node[label={[font=]:\txcol{violet!100}{Plasma}}]{}; \draw[<-,violet!100] (8.925,-2.675) to ++(4.4,1.75);
+    \draw (14.5,-2.2) node[label={[font=]:Recubrimientos}]{}; \draw (14.5,-2.6) node[label={[font=]:de $\tx{TiO}_2$}]{}; \draw[<-,red!100] (9.07,-2.915) to ++(3.9,1);
+\end{circuitikz}
