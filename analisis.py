@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #%%
-from water import WaterTreatment
+import water
 from signals import SignalHandler, SignalReff, SignalZoom, Signals
 import constants as c
 import matplotlib.pyplot as plt
@@ -193,7 +193,7 @@ plt.savefig('Potencias.pdf', dpi=300, bbox_inches='tight')
 ''' 
 Mostramos los resultados del tratamiento de hoy
 '''
-WaterTreatment('04-06/tratamiento-e4')
+water.Treatment('04-06/tratamiento-e4')
 
 #%%
 '''
@@ -207,11 +207,11 @@ for s in señales:
 '''
 Comparamos las mediciones con vidrio, las de teflón y las de acrílico
 '''
-teflon = WaterTreatment('04-06/tratamiento-e4')
+teflon = water.Treatment('04-06/tratamiento-e4')
 teflon.color = '#4277BD'
-acrilico = WaterTreatment('11-06/tratamiento-e3')
+acrilico = water.Treatment('11-06/tratamiento-e3')
 acrilico.color = '#BD4277'
-vidrio = WaterTreatment('06-06/tratamiento-e5')
+vidrio = water.Treatment('06-06/tratamiento-e5')
 vidrio.color = '#77BD42'
 
 
@@ -231,8 +231,8 @@ plt.savefig('Tratamiento_Dielectricos.pdf', dpi=300, bbox_inches='tight')
 Comparamos teflón sin vidrio, con vidrio y con vidrio y dióxido de titanio
 '''
 #teflon_solo = Tratamiento('04-06/tratamiento-e4')
-teflon_vidr = WaterTreatment('18-06/tratamiento-e4-vidrio')
-teflon_tio2 = WaterTreatment('13-06/tratamiento-e4-TiO2')
+teflon_vidr = water.Treatment('18-06/tratamiento-e4-vidrio')
+teflon_tio2 = water.Treatment('13-06/tratamiento-e4-TiO2')
 #teflon_tio2_repe = Tratamiento('25-06/tratamiento-e4-titanio')
 
 teflon_vidr.color = '#4277BD'
@@ -248,10 +248,10 @@ plt.savefig('TiO2.pdf', dpi=300, bbox_inches='tight')
 print(teflon_vidr)
 print(teflon_tio2)
 #%%
-teflon_tio2_original = WaterTreatment('13-06/tratamiento-e4-TiO2')
+teflon_tio2_original = water.Treatment('13-06/tratamiento-e4-TiO2')
 teflon_tio2_original.plot_concentration(label='Teflón con recubrimiento TiO$_2$')
 
-teflon_tio2_repetida = WaterTreatment('25-06/tratamiento-e4-titanio')
+teflon_tio2_repetida = water.Treatment('25-06/tratamiento-e4-titanio')
 teflon_tio2_repetida.plot_concentration(label='Teflón con TiO$_2$ repetida')
 
 plt.legend()
@@ -377,15 +377,15 @@ plt.show()
 
 
 # %%
-teflones_tio2 = WaterTreatment('05-07/tratamiento-e4-e6-titanio')
+teflones_tio2 = water.Treatment('05-07/tratamiento-e4-e6-titanio')
 teflones_tio2.plot_degradation(label='Dos teflones TiO2')
 #teflones_tio2.plot_eficiencia(label='Dos teflones TiO2')
 
-teflones_vidr = WaterTreatment('05-07/tratamiento-e4-e6-vidrio/zoom')
+teflones_vidr = water.Treatment('05-07/tratamiento-e4-e6-vidrio/zoom')
 teflones_vidr.plot_degradation(label='Dos teflones')
 #teflones_vidr.plot_eficiencia(label='Dos teflones')
 
-teflon_vidr = WaterTreatment('18-06/tratamiento-e4-vidrio')
+teflon_vidr = water.Treatment('18-06/tratamiento-e4-vidrio')
 teflon_vidr.plot_degradation(label='Un teflón')
 #teflon_vidr.plot_eficiencia(label='Un teflón')
 plt.legend()

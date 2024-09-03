@@ -9,20 +9,24 @@ import constants as c
 from signals import Signals
 
 
-class WaterTreatment(Signals):
-    def __init__(self, folder, Vol=200):
+class Treatment(Signals):
+    def __init__(self, folder):
         Signals.__init__(self, folder)
-        self.Vol = Vol
-        self.t, self.A = self.get_data(folder)
+        self.t, self.A, self.V = self.get_data(folder)
         self.C = self.get_concentrations()
         self.DE = self.get_degradations()
         self.Y = self.get_efficiencies()
-        self.color = "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
 
     def get_data(self, folder):
         file_name = glob.glob(os.path.join(c.ROOT, folder, '*.txt'))[0]
-        t, A = np.loadtxt(Path(file_name).expanduser(), skiprows=1).T
-        return unp.uarray(t, np.ones(len(t)) * c.T_ERR), unp.uarray(A, np.ones(len(A)) * c.A_ERR)
+        data = np.loadtxt(Path(file_name).expanduser(), skiprows=1).T
+        t = data[0]
+        A = data[1]
+        if data.shape[0] == 3:
+            V = data[2]
+        else:
+            V = 200
+        return unp.uarray(t, np.ones(len(t)) * c.T_ERR), unp.uarray(A, np.ones(len(A)) * c.A_ERR), unp.uarray(V,  c.V_0_ERR*1000)
 
     def get_concentrations(self):
         F = ufloat(c.F, c.F_ERR)
@@ -34,25 +38,7 @@ class WaterTreatment(Signals):
     def get_efficiencies(self):
         M_0 = ufloat(c.M_0, c.M_0_ERR)
         V_0 = ufloat(c.V_0, c.V_0_ERR)
-        return 6 * M_0 / V_0 * self.DE[1:] * self.Vol / (10**4 * self.P_avg * self.t[1:])
-    
-    def plot_concentration(self, label=None):
-        plt.plot(unp.nominal_values(self.t), unp.nominal_values(self.C), color=self.color, label=label, marker='o')
-        plt.errorbar(unp.nominal_values(self.t), unp.nominal_values(self.C), unp.std_devs(self.C), unp.std_devs(self.t), color=self.color)
-        plt.xlabel('$t$ [min]')
-        plt.ylabel('$C$ [mg/L]')
-    
-    def plot_degradation(self, label=None):
-        plt.plot(unp.nominal_values(self.t), unp.nominal_values(self.DE), color=self.color, label=label, marker='o')
-        plt.errorbar(unp.nominal_values(self.t), unp.nominal_values(self.DE), unp.std_devs(self.DE), unp.std_devs(self.t), color=self.color)
-        plt.xlabel('Tiempo [min]', fontsize=20)
-        plt.ylabel('Porcentaje removido (%)', fontsize=20)
-
-    def plot_efficiency(self, label=None):
-        plt.plot(unp.nominal_values(self.t[1:]), unp.nominal_values(self.Y), color=self.color, label=label, marker='o')
-        plt.errorbar(unp.nominal_values(self.t[1:]), unp.nominal_values(self.Y), unp.std_devs(self.Y), unp.std_devs(self.t[1:]), color=self.color)
-        plt.xlabel('Tiempo [min]', fontsize=20)
-        plt.ylabel('$Y$ [g/kWh]', fontsize=20)
+        return 6 * M_0 / V_0 * self.DE[1:] * self.V / (10**4 * self.P_avg * self.t[1:])
     
     def __repr__(self):
         SignalesRepr = Signals.__repr__(self)
@@ -61,3 +47,43 @@ class WaterTreatment(Signals):
                     DE = {self.DE[-1]:.2f} %
                     Y = {self.Y[-1]:.2f} g/kWh
                 '''
+    
+class Plot:
+    def __init__(self, treatment, label=None, color=None):
+        self.treatment = treatment
+        self.label = label
+        self.color = color or "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
+
+    def plot(self, x, y): 
+        plt.plot(unp.nominal_values(x), unp.nominal_values(y), color=self.color, label=self.label, marker='o')
+        plt.errorbar(unp.nominal_values(x), unp.nominal_values(y), unp.std_devs(y), unp.std_devs(x), color=self.color)
+
+    def concentration(self):
+        self.plot(self.treatment.t, self.treatment.C)
+        plt.xlabel('$t$ [min]')
+        plt.ylabel('$C$ [mg/L]')
+    
+    def degradation(self):
+        self.plot(self.treatment.t, self.treatment.DE)
+        plt.xlabel('$t$ [min]')
+        plt.ylabel('$DE$ [%]')
+
+    def efficiency(self):
+        self.plot(self.treatment.t[1:], self.treatment.Y)
+        plt.xlabel('$t$ [min]')
+        plt.ylabel('$Y$ [g/kWh]')
+
+    def plot_all(self, axs):
+        axs[2].set_xlabel('$t$ [min]')
+
+        axs[0].plot(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.C), color=self.color, label=self.label, marker='o')
+        axs[0].errorbar(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.C), unp.std_devs(self.treatment.C), unp.std_devs(self.treatment.t), color=self.color)
+        axs[0].set_ylabel('$C$ [mg/L]')   
+
+        axs[1].plot(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.DE), color=self.color, label=self.label, marker='o')
+        axs[1].errorbar(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.DE), unp.std_devs(self.treatment.DE), unp.std_devs(self.treatment.t), color=self.color)
+        axs[1].set_ylabel('$DE$ [%]')   
+
+        axs[2].plot(unp.nominal_values(self.treatment.t[1:]), unp.nominal_values(self.treatment.Y), color=self.color, label=self.label, marker='o')
+        #axs[2].errorbar(unp.nominal_values(self.treatment.t[1:]), unp.nominal_values(self.treatment.Y), unp.std_devs(self.treatment.Y), unp.std_devs(self.treatment.t[1:]), color=self.color)
+        axs[2].set_ylabel('$Y$ [g/kWh]')    
