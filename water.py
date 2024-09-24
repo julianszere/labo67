@@ -55,8 +55,8 @@ class Plot:
         self.color = color or "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
 
     def plot(self, x, y): 
-        plt.plot(unp.nominal_values(x), unp.nominal_values(y), color=self.color, label=self.label, marker='o')
-        plt.errorbar(unp.nominal_values(x), unp.nominal_values(y), unp.std_devs(y), unp.std_devs(x), color=self.color)
+        plt.scatter(unp.nominal_values(x), unp.nominal_values(y), color=self.color, marker='s', s=10, zorder=1)
+        plt.errorbar(unp.nominal_values(x), unp.nominal_values(y), unp.std_devs(y), unp.std_devs(x), color=self.color, label=self.label, zorder=0)
 
     def concentration(self):
         self.plot(self.treatment.t, self.treatment.C)
@@ -76,11 +76,9 @@ class Plot:
     def plot_all(self, axs):
         axs[2].set_xlabel('$t$ [min]')
 
-        axs[0].plot(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.C), color=self.color, label=self.label, marker='o')
         axs[0].errorbar(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.C), unp.std_devs(self.treatment.C), unp.std_devs(self.treatment.t), color=self.color)
         axs[0].set_ylabel('$C$ [mg/L]')   
 
-        axs[1].plot(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.DE), color=self.color, label=self.label, marker='o')
         axs[1].errorbar(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.DE), unp.std_devs(self.treatment.DE), unp.std_devs(self.treatment.t), color=self.color)
         axs[1].set_ylabel('$DE$ [%]')   
 

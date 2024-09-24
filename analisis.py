@@ -215,9 +215,9 @@ vidrio = water.Treatment('06-06/tratamiento-e5')
 vidrio.color = '#77BD42'
 
 
-teflon.plot_concentration('Teflón')
-acrilico.plot_concentration('Acrílico')
-vidrio.plot_concentration('Vidrio')
+#teflon.plot_concentration('Teflón')
+#acrilico.plot_concentration('Acrílico')
+#vidrio.plot_concentration('Vidrio')
 
 print(teflon)
 print(acrilico)
@@ -334,45 +334,33 @@ sz = SignalZoom(path+'tratamiento-e3 2024-06-11 17h 36m 22s.csv', sr.T)
 s = SignalHandler(path+'tratamiento-e3 2024-06-11 17h 36m 22s.csv')
 
 fig, (ax1, ax3) = plt.subplots(2, 1, figsize=(14, 7))
+fig.set_facecolor('#FCF7FF')
 
-lns1 = ax1.plot(sr.tI * 1000000, sr.I * 1000, color='#77BD42')
+lns1 = ax1.plot(sr.tI * 1000000, sr.I * 1000, color='#F0B22E')
 #lns2 = ax1.plot(sz.t * 1000000, sz.I * 1000, color='#4277BD')
 
 ax2 = ax1.twinx()
-def sin(x, A, T, p, B): 
-    return A*np.sin(2*np.pi/T*x + p) + B
-initialGuess = [7500, 1/8000, 0, 10000]
-popt, pcov = curve_fit(sin, sr.tV, sr.V, p0=initialGuess)
-perr = np.sqrt(np.diag(pcov))
-A, T, p, B = popt
-A_err, T_err, p_err, B_err = perr
-ax2.plot(sr.tV * 1000000, sin(sr.tV, A, T, p, B) / 1000, c='black', label='Ajuste')
-
-lns3 = ax2.plot(sr.tV * 1000000, sr.V / 1000, color='#BD4277', label='$V$')
+lns3 = ax2.plot(sr.tV * 1000000, sr.V / 1000, color='#552FFA', label='$V$', zorder=0)
 ax2.set_ylabel('$V$ [kV]')
 ax2.legend(loc='upper left')
 
-dt = 50
-indices, _ = find_peaks((s.I/np.max(s.I))**2, height=0.15)
-i, f = indices[0] - dt, indices[-1] + dt
-t_filter, y = np.linspace([s.tI[i], np.mean(s.I[i-dt:i])], [s.tI[f], np.mean(s.I[f:f+dt])], f-i).T
-ax3.plot(t_filter * 1000000, y * 1000, c='grey', label='Interpolación')       
-
-
-lns4 = ax3.plot(sz.t * 1000000, sz.I * 1000, color='#4277BD', label='$I_{str}$')
-lns5 = ax3.plot(s.tI * 1000000, s.I * 1000, color='#77BD42', label='$I$')
+lns4 = ax3.plot(sz.t  * 1000000, sz.I * 1000, color='#2ECAF0', label='$I_{str}$')
+lns5 = ax3.plot(s.tI * 1000000, s.I * 1000, color='#F0B22E', label='$I$')
 ax3.set_xlabel('$t$ [$\mu$s]')
 
+#ax4 = ax3.twinx()
+#ax4.plot(sz.t * 1000000, sz.V / 1000, color='#552FFA')
 
 ax3.legend(loc='upper left')
 
-ax1.set_xlim(min(sr.tV) * 1000000, max(sr.tV) * 1000000)
+ax1.set_xlim(-200, 200)
 ax3.set_xlim(min(sz.t) * 1000000, max(sz.t) * 1000000)
+
 
 fig.text(0.07, 0.5, '$I$ [mA]', va='center', rotation='vertical', fontsize=17.5)
 
 #plt.tight_layout()
-plt.savefig('Señal_Típicas.pdf', dpi=300, bbox_inches='tight')
+plt.savefig('Señal_Típicas2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
