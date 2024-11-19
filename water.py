@@ -7,27 +7,31 @@ import os
 import glob
 import constants as c
 from signals import Signals
+import re
 
 
-class Treatment(Signals):
-    def __init__(self, folder):
+class WaterTreatment(Signals):
+    def __init__(self, folder, V=200):
         Signals.__init__(self, folder)
-        self.t, self.A, self.V = self.get_data(folder)
+        self.file_name = glob.glob(os.path.join(c.ROOT, folder, '*.txt'))[0]
+        self.V_0, self.C_0 = self.get_parameters()
+        self.t, self.A = self.get_data()
         self.C = self.get_concentrations()
         self.DE = self.get_degradations()
         self.Y = self.get_efficiencies()
 
-    def get_data(self, folder):
-        file_name = glob.glob(os.path.join(c.ROOT, folder, '*.txt'))[0]
-        data = np.loadtxt(Path(file_name).expanduser(), skiprows=1).T
-        t = data[0]
-        A = data[1]
-        if data.shape[0] == 3:
-            V = data[2]
-        else:
-            V = 200
-        return unp.uarray(t, np.ones(len(t)) * c.T_ERR), unp.uarray(A, np.ones(len(A)) * c.A_ERR), unp.uarray(V,  c.V_0_ERR*1000)
-
+    def get_parameters(self):
+        ppm_match = re.search(r'(\d+)(?=ppm)', self.file_name)
+        ml_match = re.search(r'(\d+)(?=ml)', self.file_name)
+        V_0 = ppm_match.group(1) if ppm_match else 200
+        C_0 = ml_match.group(1) if ml_match else 10
+        return unp.uarray(V_0, c.V_0_ERR), unp.uarray(C_0, c.C_0_ERR)
+        
+    def get_data(self):
+        t, A = np.loadtxt(Path(self.file_name).expanduser(), skiprows=1, usecols=(0,1)).T
+        avg = 3 if self.C_0 == 1 else 1
+        return unp.uarray(t, np.ones(len(t)) * c.T_ERR), unp.uarray(A, np.ones(len(A)) * c.A_ERR / avg)
+        
     def get_concentrations(self):
         F = ufloat(c.F, c.F_ERR)
         return self.A * F
@@ -36,9 +40,25 @@ class Treatment(Signals):
         return (self.A[0] - self.A) / self.A[0] * 100
     
     def get_efficiencies(self):
-        M_0 = ufloat(c.M_0, c.M_0_ERR)
-        V_0 = ufloat(c.V_0, c.V_0_ERR)
-        return 6 * M_0 / V_0 * self.DE[1:] * self.V / (10**4 * self.P_avg * self.t[1:])
+        return 6 * self.C_0 * self.DE[1:] * self.V_0 / (10**4 * self.P_avg * self.t[1:])
+    
+    def plot_concentration(self, label=None):
+        plt.plot(unp.nominal_values(self.t), unp.nominal_values(self.C), label=label, marker='o')
+        plt.errorbar(unp.nominal_values(self.t), unp.nominal_values(self.C), unp.std_devs(self.C), unp.std_devs(self.t))
+        plt.xlabel('$t$ [min]')
+        plt.ylabel('$C$ [mg/L]')
+    
+    def plot_degradation(self, label=None):
+        plt.plot(unp.nominal_values(self.t), unp.nominal_values(self.DE), label=label, marker='o')
+        plt.errorbar(unp.nominal_values(self.t), unp.nominal_values(self.DE), unp.std_devs(self.DE), unp.std_devs(self.t))
+        plt.xlabel('Tiempo [min]', fontsize=20)
+        plt.ylabel('$DE$ (%)', fontsize=20)
+
+    def plot_efficiency(self, label=None):
+        plt.plot(unp.nominal_values(self.t[1:]), unp.nominal_values(self.Y), label=label, marker='o')
+        plt.errorbar(unp.nominal_values(self.t[1:]), unp.nominal_values(self.Y), unp.std_devs(self.Y), unp.std_devs(self.t[1:]))
+        plt.xlabel('Tiempo [min]', fontsize=20)
+        plt.ylabel('$Y$ [g/kWh]', fontsize=20)
     
     def __repr__(self):
         SignalesRepr = Signals.__repr__(self)
@@ -47,41 +67,3 @@ class Treatment(Signals):
                     DE = {self.DE[-1]:.2f} %
                     Y = {self.Y[-1]:.2f} g/kWh
                 '''
-    
-class Plot:
-    def __init__(self, treatment, label=None, color=None):
-        self.treatment = treatment
-        self.label = label
-        self.color = color or "#{:06x}".format(np.random.randint(0, 0xFFFFFF))
-
-    def plot(self, x, y): 
-        plt.scatter(unp.nominal_values(x), unp.nominal_values(y), color=self.color, marker='s', s=10, zorder=1)
-        plt.errorbar(unp.nominal_values(x), unp.nominal_values(y), unp.std_devs(y), unp.std_devs(x), color=self.color, label=self.label, zorder=0)
-
-    def concentration(self):
-        self.plot(self.treatment.t, self.treatment.C)
-        plt.xlabel('$t$ [min]')
-        plt.ylabel('$C$ [mg/L]')
-    
-    def degradation(self):
-        self.plot(self.treatment.t, self.treatment.DE)
-        plt.xlabel('$t$ [min]')
-        plt.ylabel('$DE$ [%]')
-
-    def efficiency(self):
-        self.plot(self.treatment.t[1:], self.treatment.Y)
-        plt.xlabel('$t$ [min]')
-        plt.ylabel('$Y$ [g/kWh]')
-
-    def plot_all(self, axs):
-        axs[2].set_xlabel('$t$ [min]')
-
-        axs[0].errorbar(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.C), unp.std_devs(self.treatment.C), unp.std_devs(self.treatment.t), color=self.color)
-        axs[0].set_ylabel('$C$ [mg/L]')   
-
-        axs[1].errorbar(unp.nominal_values(self.treatment.t), unp.nominal_values(self.treatment.DE), unp.std_devs(self.treatment.DE), unp.std_devs(self.treatment.t), color=self.color)
-        axs[1].set_ylabel('$DE$ [%]')   
-
-        axs[2].plot(unp.nominal_values(self.treatment.t[1:]), unp.nominal_values(self.treatment.Y), color=self.color, label=self.label, marker='o')
-        #axs[2].errorbar(unp.nominal_values(self.treatment.t[1:]), unp.nominal_values(self.treatment.Y), unp.std_devs(self.treatment.Y), unp.std_devs(self.treatment.t[1:]), color=self.color)
-        axs[2].set_ylabel('$Y$ [g/kWh]')    

@@ -7,6 +7,7 @@ import glob
 import os
 import uncertainties.unumpy as unp
 import constants as c
+from matplotlib import pyplot as plt
 
 class SignalHandler:
     def __init__(self, file_name):
@@ -24,7 +25,7 @@ class SignalHandler:
 class SignalReff(SignalHandler):
     def __init__(self, file):
         super().__init__(file)
-        self.Vpp, self.Vpp_err, self.T, self.T_err = self.fit_sin()
+        self.V_ac, self.V_ac_err, self.V_cc, self.V_cc_err, self.T, self.T_err = self.fit_sin()
 
     def fit_sin(self):
         def sin(x, A, T, p, B): return A*np.sin(2*np.pi/T*x + p) + B
@@ -33,7 +34,7 @@ class SignalReff(SignalHandler):
         perr = np.sqrt(np.diag(pcov))
         A, T, p, B = popt
         A_err, T_err, p_err, B_err = perr
-        return 2*A, 2*A_err, T, T_err
+        return 2*A, 2*A_err, B, B_err, T, T_err
     
 
 class SignalZoom(SignalHandler):
@@ -42,20 +43,33 @@ class SignalZoom(SignalHandler):
         self.t, self.I, self.V = self.filter(file_zoom)
         self.P_avg = self.get_power(T)
         self.I_avg = self.get_current()
-
+        
     def filter(self, file_zoom):
         dt = 50
-        # 0.005 np.max(self.I)/2
-        #indices =  np.where(self.I > 0.005)[0]
-        #indices =  np.where(self.I/np.max(self.I) > 0.4)[0]
-        indices, _ = find_peaks((self.I/np.max(self.I))**2, height=0.15)
-        i, f = indices[0] - dt, indices[-1] + dt
-        if i < 0 or f > len(self.I):
-            print(file_zoom)
-        t_filter, y = np.linspace([self.tI[i], np.mean(self.I[i-dt:i])], [self.tI[f], np.mean(self.I[f:f+dt])], f-i).T
-        I_filter = self.I[i:f] - y
-        V_filter = self.V[i:f]
-        return t_filter, I_filter, V_filter
+        threshold = 0.2
+        dIdt = np.abs(np.gradient(self.I, self.tI)[dt:-dt])
+        indices, _ = find_peaks(dIdt/np.max(dIdt), height=threshold)
+        i, f = indices[0], indices[-1]
+        try:
+            if len(indices) < 2:
+                print(indices)
+                raise ValueError("Not enough peaks found.") 
+            t_filter, y = np.linspace([self.tI[i], np.mean(self.I[i:i+dt])], [self.tI[f], np.mean(self.I[f-dt:f])], f-i).T
+            I_filter = self.I[i:f] - y
+            V_filter = self.V[i:f]
+            if np.any(np.isnan(I_filter)):
+                print(i)
+                print(f)
+                print(self.I[i:f])
+                print(y)
+                raise ValueError("NAN.")
+            return t_filter, I_filter, V_filter
+        except Exception as e:
+            print(f'El cálculo de la potencia en {file_zoom} falló con error {e}')
+            plt.plot(self.tI[dt:-dt], np.abs(dIdt / np.max(dIdt)), label='Derivada')
+            plt.plot(self.tI, self.I / np.max(self.I), label='Corriente')
+            plt.axhline(0.25, label='Threshold')
+            plt.legend()
     
     def get_power(self, T):
         return integrate.simpson(self.I * self.V, x=self.t) / T
@@ -66,16 +80,23 @@ class SignalZoom(SignalHandler):
 
 class Signals:
     def __init__(self, folder):
-        self.signals_reff, self.signals_zoom = self.get_signals(folder)
+        self.folder = folder
+        files = glob.glob(os.path.join(c.ROOT, self.folder, '*.csv'))
+        self.signals_reff = self.get_reff_signals(files)
+        self.T_avg =  self.get_avg_period()
+        self.signals_zoom = self.get_zoom_signals(files)
         self.P_avg = self.get_avg_power()
-        self.V_vpp = self.get_avg_voltage()
+        self.V_ac, self.V_cc = self.get_avg_voltage()
         self.I_avg = self.get_avg_current()
 
-    def get_signals(self, folder):
-        files = glob.glob(os.path.join(c.ROOT, folder, '*.csv'))
-        signals_reff = [SignalReff(f'{folder}/{os.path.basename(file)}') for file in files if 'reff' in os.path.basename(file)]
-        signals_zoom = [SignalZoom(f'{folder}/{os.path.basename(file)}', signals_reff[0].T) for file in files if 'reff' not in os.path.basename(file)]
-        return signals_reff, signals_zoom
+    def get_reff_signals(self, files):
+        return [SignalReff(f'{self.folder}/{os.path.basename(file)}') for file in files if 'reff' in os.path.basename(file)]
+        
+    def get_zoom_signals(self, files):
+        return [SignalZoom(f'{self.folder}/{os.path.basename(file)}', self.T_avg) for file in files if 'reff' not in os.path.basename(file)]
+    
+    def get_avg_period(self):
+        return np.mean([s.T for s in self.signals_reff], axis=0)
     
     def get_avg_power(self):
         P_avg = np.mean([s.P_avg for s in self.signals_zoom], axis=0)
@@ -83,9 +104,11 @@ class Signals:
         return unp.uarray(P_avg, P_std)
 
     def get_avg_voltage(self):
-        V_vpp = np.mean([s.Vpp for s in self.signals_reff], axis=0)
-        V_std = np.mean([s.Vpp_err for s in self.signals_reff], axis=0)
-        return unp.uarray(V_vpp, V_std)
+        V_ac = np.mean([s.V_ac for s in self.signals_reff], axis=0)
+        V_ac_std = np.mean([s.V_ac_err for s in self.signals_reff], axis=0)
+        V_cc = np.mean([s.V_cc for s in self.signals_reff], axis=0)
+        V_cc_std = np.mean([s.V_cc_err for s in self.signals_reff], axis=0)
+        return unp.uarray(V_ac, V_ac_std), unp.uarray(V_cc, V_cc_std)
     
     def get_avg_current(self):
         I_avg = np.mean([s.I_avg for s in self.signals_zoom], axis=0)
@@ -94,6 +117,8 @@ class Signals:
     
     def __repr__(self):
         return f'''
+                    {self.folder}
                     I = {self.I_avg * 1000} mA
-                    V = {self.V_vpp / 1000} kV
+                    V_cc = {self.V_cc / 1000} kV
+                    V_ac = {self.V_ac / 1000} kV
                     P = {self.P_avg} W'''
